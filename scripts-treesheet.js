@@ -76,13 +76,23 @@ Example tree structure
 */
 
 const treeNodesList = [
-"~ROOT",
-"╠~Node&nbsp;A",
-"║├Leaf&nbsp;A.1",
-"║└-Node&nbsp;A.2",
-"║&nbsp;╚Leaf&nbsp;A.2.1",
-"╚~Node&nbsp;B",
-"&nbsp;└Node&nbsp;B.1"
+"~",
+"╠~",
+"║├",
+"║└-",
+"║ ╚",
+"╚~",
+" └"
+];
+
+const treeNodesList2 = [
+"ROOT",
+"Node A",
+"Leaf A.1",
+"Node A.2",
+"Leaf A.2.1",
+"Node B",
+"Node B.1"
 ];
 
 var func1 = function() {
@@ -222,13 +232,20 @@ function myCellDblClickHandler(e) {
   editCellStart();
 }
 
-function myCellOnKeyDown(e) {
+function myNaviCellOnKeyDown(e) {
+}
+
+function myDataCellOnKeyDown(e) {
   e = e || window.event;
   if (e.keyCode == '13') { // Enter
     if (e.shiftKey) {
       return;
     }
     var cellTd = getCurrentEditableElement();
+    if (cellTd._type === "treeNodeConstruct") {
+      cellTd._nodeNameHTML = cellTd.innerHTML;
+      cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
+    }
     cellTd.contentEditable = false;
     cellTd.blur();
     ctx.editingCell = false;
@@ -236,7 +253,11 @@ function myCellOnKeyDown(e) {
   } else if (e.keyCode == '27') { // Esc
     var cellTd = getCurrentEditableElement();
     alert(cellTd.innerHTML);
-    cellTd.innerHTML = cellTd._savedInnerHTML;
+    if (cellTd._type === "treeNodeConstruct") {
+      cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
+    } else {
+      cellTd.innerHTML = cellTd._savedInnerHTML;
+    }
     cellTd.contentEditable = false;
     cellTd.blur();
     ctx.editingCell = false;
@@ -248,6 +269,31 @@ function myCellOnInputHandler(e) {
   // e: {data, dataTransfer, inputType, isComposing}
   //alert(e.inputType);
   // FIXME obfuscate html tags to keep formatting only (remove all tags but <b><i><font> etc)
+}
+
+function getCurrentEditableElement() {
+  if (isNaN(ctx.y)) return null;
+  const cellTd = document.getElementById("data_"+ctx.y+"_"+ctx.x);
+  if (cellTd._t === "treeNode") {
+    return cellTd.childNodes[0].childNodes[1];
+  } else {
+    return cellTd;
+  }
+}
+
+function editCellStart() {
+  const cellTd = getCurrentEditableElement();
+  if (!cellTd) return;
+  
+  if (cellTd._type === "treeNodeConstruct") {
+    cellTd._savedInnerHTML = cellTd._nodeNameHTML;
+    cellTd.innerHTML = cellTd._nodeNameHTML;
+  } else {
+    cellTd._savedInnerHTML = cellTd.innerHTML;
+  }
+  ctx.editingCell = true;
+  cellTd.contentEditable = true; //"plaintext-only" allows only plain text to be entered/inserted
+  cellTd.focus();
 }
 
 function myCreateSvg() {
@@ -281,7 +327,7 @@ function insertNaviRow(pos, navi) {
   cell.id="navi_"+row.naviType;
   cell.onclick=myCellClickHandler;
   //cell.ondblclick=myCellDblClickHandler;
-  cell.onkeydown=myCellOnKeyDown;
+  cell.onkeydown=myNaviCellOnKeyDown;
   const typeArrow = navi.type === "top" ? "▲▲▲" : "▼▼▼";
   const cellText = document.createTextNode(typeArrow + " LOAD MORE...");
   cell.appendChild(cellText);
@@ -297,13 +343,21 @@ function insertDataRow(pos, record) {
     cell.id="data_" + recordId + "_" + j;
     cell.onclick=myCellClickHandler;
     cell.ondblclick=myCellDblClickHandler;
-    cell.onkeydown=myCellOnKeyDown;
+    cell.onkeydown=myDataCellOnKeyDown;
     if (j == 0) {
+      cell._type = "treeNodeConstruct";
+      cell._nodeConstruct = treeNodesList[recordId];
+      cell._nodeNameHTML = treeNodesList2[recordId];
       const elSpan = document.createElement("span");
       if (recordId < treeNodesList.length) {
         const t = treeNodesList[recordId];
-        var ht = "<font color='red'>" + t.substr(0,1) + "</font>" + t.substr(1);
-        elSpan.innerHTML = ht;
+        if (t.length <= 2) {
+          cell._nodeConstructHTML = "<font color='red'>" + t.substr(0,1) + "</font>" + t.substr(1);
+        } else {
+          cell._nodeConstructHTML = "<font color='red'>" + t.substr(0,1) + "</font>" + t.substr(1,1)
+                  + "<font color='red'>" + t.substr(2,1) + "</font>" + t.substr(3);
+        }
+        elSpan.innerHTML = cell._nodeConstructHTML + cell._nodeNameHTML;
       } else {
         elSpan.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;<b>D</b>um";
       }
@@ -400,26 +454,6 @@ function initialize() {
   }
   
   dsFetch(page.from, page.to, {onRecord: onRecordFn, onCompleted: onPageLoadedFn});
-}
-
-function getCurrentEditableElement() {
-  if (isNaN(ctx.y)) return null;
-  const cellTd = document.getElementById("data_"+ctx.y+"_"+ctx.x);
-  if (cellTd._t === "treeNode") {
-    return cellTd.childNodes[0].childNodes[1];
-  } else {
-    return cellTd;
-  }
-}
-
-function editCellStart() {
-  const cellTd = getCurrentEditableElement();
-  if (!cellTd) return;
-  
-  ctx.editingCell = true;
-  cellTd.contentEditable = true; //"plaintext-only" allows only plain text to be entered/inserted
-  cellTd._savedInnerHTML = cellTd.innerHTML;
-  cellTd.focus();
 }
 
 window.onload= function() {
