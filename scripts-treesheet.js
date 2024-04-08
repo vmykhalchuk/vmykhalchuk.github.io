@@ -97,27 +97,27 @@ var func1 = function() {
 
 var ctx = {
   x: 0,
-  y: 0, // -1 - top row (load more); -2 - bottom row (load more)
+  y: 0, // "top" - top row (load more); "bottom" - bottom row (load more)
   width: 4, height: 5,
   
   editingCell: false
 }
 
 function deselectCell(x, y) {
-  if (y === -1 || y === -2) {
+  if (y === "top" || y === "bottom") {
     var cellTd = document.getElementById("navi_"+y);
   } else {
-    var cellTd = document.getElementById("d_"+y+"_"+x);
+    var cellTd = document.getElementById("data_"+y+"_"+x);
   }
   cellTd.className = "cellNotSelected";
   cellTd.parentElement.className = "rowNotSelected";
 }
 
 function selectCell(x, y, movingUp) {
-  if (y === -1 || y === -2) {
+  if (y === "top" || y === "bottom") {
     var cellTd = document.getElementById("navi_"+y);
   } else {
-    var cellTd = document.getElementById("d_"+y+"_"+x);
+    var cellTd = document.getElementById("data_"+y+"_"+x);
   }
   cellTd.className = "cellSelected";
   cellTd.parentElement.className = "rowSelected";
@@ -126,6 +126,9 @@ function selectCell(x, y, movingUp) {
 }
 
 function scrollIntoViewIfNeeded(cellTd) {
+  // docs: https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
+  cellTd.scrollIntoView({ behavior: "instant", block: "nearest", inline: "nearest"});
+  /* below code was v0.1 which worked well, till I replaced with above line
   const mainRect = document.getElementById("main01").getBoundingClientRect();
   const rect = cellTd.getBoundingClientRect();
   //console.log("4up: top: " + (rect.top - mainRect.top) + " bottom: " + (rect.bottom - mainRect.top));
@@ -136,57 +139,86 @@ function scrollIntoViewIfNeeded(cellTd) {
   if ((mainRect.bottom - rect.top)<0 || (mainRect.bottom - rect.bottom)<0) {
     cellTd.scrollIntoView(false);
   }
+  */
 }
   
-function myMove(dx, dy) {
+function myMove(dir) {
   deselectCell(ctx.x, ctx.y);
-  if (dx === 1 && ctx.x < (ctx.width - 1)) {
+  if (dir === "right" && ctx.y !== "top" && ctx.y !=="bottom" && ctx.x < (ctx.width-1)) {
     ctx.x++;
-  } else if (dx === -1 && ctx.x > 0) {
+  } else if (dir === "left" && ctx.y !== "top" && ctx.y !=="bottom" && ctx.x > 0) {
     ctx.x--;
-  } else if (dy === 1) {
-    if (ctx.y >= 0 && ctx.y < (ctx.height - 1)) {
-      ctx.y++;
-    } else if (ctx.y === -1) {
-      ctx.y = 0;
-    } else {
-      ctx.y = -2;
-    }
-  } else if (dy === -1) {
+  } else if (dir === "up") {
     if (ctx.y > 0) {
       ctx.y--;
-    } else if (ctx.y === -2) {
+    } else if (ctx.y === "bottom") {
       ctx.y = ctx.height-1;
     } else {
-      ctx.y = -1;
+      ctx.y = "top";
+    }
+  } else if (dir === "down") {
+    if (ctx.y >= 0 && ctx.y < (ctx.height-1)) {
+      ctx.y++;
+    } else if (ctx.y === "top") {
+      ctx.y = 0;
+    } else {
+      ctx.y = "bottom";
     }
   }
   selectCell(ctx.x, ctx.y);
 }
 
-function myCellClickHandler(cell) {
-  deselectCell(ctx.x, ctx.y);
-  ctx.x = parseInt(cell.id.split('_')[2]);
-  ctx.y = parseInt(cell.id.split('_')[1]);
-  selectCell(ctx.x, ctx.y);
+function myCellClickHandlerBasic(cell) {
+  const idSegments = cell.id.split('_');
+  if (idSegments.length == 2 && idSegments[0] == "navi") {
+    if (idSegments[1] === "top" || idSegments[1] === "bottom") {
+      deselectCell(ctx.x, ctx.y);
+      ctx.y = idSegments[1];
+      selectCell(ctx.x, ctx.y);
+    }
+  } else if (idSegments.length == 3 && idSegments[0] == "data") {
+    const newX = parseInt(idSegments[2]);
+    const newY = parseInt(idSegments[1]);
+    if (isNaN(newX) || isNaN(newY)) {
+      if (cell.parentElement !== document) {
+        myCellClickHandlerBasic(cell.parentElement);
+      } else {
+        console.log("ERROR: Reached root: " + cell);
+      }
+    } else {
+      deselectCell(ctx.x, ctx.y);
+      ctx.x = newX;
+      ctx.y = newY;
+      selectCell(ctx.x, ctx.y);
+    }
+  } else {
+    if (cell.parentElement !== document) {
+      myCellClickHandlerBasic(cell.parentElement);
+    } else {
+      console.log("Bad ID! " + cell.id + "/" + cell);
+      alert("Bad ID! " + cell.id + "/" + cell);
+    }
+  }
 }
 
-function myCellClickHandler_v2(e) {
+function myCellClickHandler(e) {
  	e = e || window.event;
 
-  myCellClickHandler(e.target);
+  myCellClickHandlerBasic(e.target);
 
-  var cellWasAlreadySelected = (ctx.lastCellClickedX == ctx.x) && (ctx.lastCellClickedY == ctx.y);
+  var cellWasAlreadySelected = (ctx.lastCellClickedX === ctx.x) && (ctx.lastCellClickedY === ctx.y);
   ctx.lastCellClickedX = ctx.x;
   ctx.lastCellClickedY = ctx.y;
 
   if (cellWasAlreadySelected) editCellStart();
 }
 
-function myCellDblClickHandler_v2(e) {
+function myCellDblClickHandler(e) {
  	e = e || window.event;
   const cell = e.target;
-  myCellClickHandler(cell);
+
+  ctx.lastCellClickedX = null; ctx.lastCellClickedY = null;
+  myCellClickHandlerBasic(cell);
   editCellStart();
 }
 
@@ -203,9 +235,9 @@ function myCellOnKeyDown(e) {
     document.getElementById("mainTable").focus();
   } else if (e.keyCode == '27') { // Esc
     var cellTd = getCurrentEditableElement();
-    cellTd.contentEditable = false;
     alert(cellTd.innerHTML);
     cellTd.innerHTML = cellTd._savedInnerHTML;
+    cellTd.contentEditable = false;
     cellTd.blur();
     ctx.editingCell = false;
     document.getElementById("mainTable").focus();
@@ -245,8 +277,12 @@ function insertNaviRow(pos, navi) {
   const row = mainTable.insertRow(pos);
   row.naviType = navi.type;
   const cell = row.insertCell(-1);
+  cell.colSpan=ctx.width;
   cell.id="navi_"+row.naviType;
-  const typeArrow = navi.type === -1 ? "▲▲▲" : "▼▼▼";
+  cell.onclick=myCellClickHandler;
+  //cell.ondblclick=myCellDblClickHandler;
+  cell.onkeydown=myCellOnKeyDown;
+  const typeArrow = navi.type === "top" ? "▲▲▲" : "▼▼▼";
   const cellText = document.createTextNode(typeArrow + " LOAD MORE...");
   cell.appendChild(cellText);
 }
@@ -258,9 +294,9 @@ function insertRow(pos, record) {
   row.record = record;
   for (let j = 0; j < ctx.width; j++) {
     const cell = row.insertCell(-1);
-    cell.id="d_" + recordId + "_" + j;
-    cell.onclick=myCellClickHandler_v2;
-    cell.ondblclick=myCellDblClickHandler_v2;
+    cell.id="data_" + recordId + "_" + j;
+    cell.onclick=myCellClickHandler;
+    cell.ondblclick=myCellDblClickHandler;
     cell.onkeydown=myCellOnKeyDown;
     if (j == 0) {
       const elSpan = document.createElement("span");
@@ -331,7 +367,6 @@ function insertRow(pos, record) {
       if (j == 4) textVal = record.data.value;
       const cellText = document.createTextNode(textVal);
       cell.appendChild(cellText);
-      //cell.innerHTML = "<font color='red'>|</font><font color='blue'>|</font><font color='red' weight='bold'>|</font>"
 
       cell.style.borderWidth="1px";
       cell.style.borderColor="grey";
@@ -357,8 +392,8 @@ function initialize() {
       insertRow(-1, record);
     }
     
-    insertNaviRow(0, {type: -1/*top*/});
-    insertNaviRow(ctx.height + 1 /* or -1 */, {type: -2/*bottom*/});
+    insertNaviRow(0, {type: "top"});
+    insertNaviRow(ctx.height + 1 /* or -1 */, {type: "bottom"});
 
     selectCell(ctx.x, ctx.y);
   }
@@ -367,7 +402,8 @@ function initialize() {
 }
 
 function getCurrentEditableElement() {
-  const cellTd = document.getElementById("d_"+ctx.y+"_"+ctx.x);
+  if (isNaN(ctx.y)) return null;
+  const cellTd = document.getElementById("data_"+ctx.y+"_"+ctx.x);
   if (cellTd._t === "treeNode") {
     return cellTd.childNodes[0].childNodes[1];
   } else {
@@ -376,9 +412,11 @@ function getCurrentEditableElement() {
 }
 
 function editCellStart() {
-  ctx.editingCell = true;
   const cellTd = getCurrentEditableElement();
-  cellTd.contentEditable = true; //"plaintext-only"
+  if (!cellTd) return;
+  
+  ctx.editingCell = true;
+  cellTd.contentEditable = true; //"plaintext-only" allows only plain text to be entered/inserted
   cellTd._savedInnerHTML = cellTd.innerHTML;
   cellTd.focus();
 }
@@ -400,19 +438,19 @@ window.onload= function() {
     
     
     if (e.keyCode == '38') { // up arrow
-      myMove(0,-1);
+      myMove("up");
       e.preventDefault();
     }
     else if (e.keyCode == '40') { // down arrow
-      myMove(0,1);
+      myMove("down");
       e.preventDefault();
     }
     else if (e.keyCode == '37') { // left arrow
-      myMove(-1,0);
+      myMove("left");
       e.preventDefault();
     }
     else if (e.keyCode == '39') { // right arrow
-      myMove(1,0);
+      myMove("right");
       e.preventDefault();
     }
     else if (e.keyCode == '113') { // F2
@@ -424,13 +462,12 @@ window.onload= function() {
       // Shft -> 16
       // Ctrl -> 17
       // Alt  -> 18
-      //alert("Pressed: " + e.keyCode);
-      console.log("onkeydown:" + e.keyCode);
+      //console.log("onkeydown:" + e.keyCode);
     }
   };
   
   document.onkeypress = function(e) {
   	e = e || window.event;
-    console.log("onkeypress:" + e.keyCode);
+    //console.log("onkeypress:" + e.keyCode);
   };
 }

@@ -16,24 +16,6 @@ main {
   flex: auto;
 }
 
-.textNextToSvg {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 10px; /* Adjust the value to add space between the image and text */
-  align-items: center;
-}
-
-.cont {
-  display: flex;
-  align-items: flex-start;
-  overflow: hidden;
-}
-.cont svg {
-  flex-shrink: 0;
-  height: 1em; /* Prevent scaling beyond text size */
-  width: 1em;
-}
-
 /*Roman's tweaks*/
 
 html {
@@ -69,22 +51,6 @@ footer {
     height: 200px;
     margin-top: -200px;
 }*/
-
-td.ex2 {
-  border: 2px solid black;
-  outline-style: dotted;
-  outline-color: blue;
-  user-select: none;
-}
-
-td.ex3 {
-  border: 2px solid black;
-  outline-style: outset;
-  outline-color: grey;
-  /*transform: rotate(-90deg);*/
-  user-select: none;
-  /*writing-mode: vertical-rl;*/
-}
 
 
 td.cellNotSelected {
