@@ -235,6 +235,10 @@ function myCellDblClickHandler(e) {
 function myNaviCellOnKeyDown(e) {
 }
 
+function myDataCellOnBlur(e) {
+  myDataCellOnKeyDown({keyCode: '27'});
+}
+
 function myDataCellOnKeyDown(e) {
   e = e || window.event;
   if (e.keyCode == '13') { // Enter
@@ -252,7 +256,7 @@ function myDataCellOnKeyDown(e) {
     document.getElementById("mainTable").focus();
   } else if (e.keyCode == '27') { // Esc
     var cellTd = getCurrentEditableElement();
-    alert(cellTd.innerHTML);
+    //alert(cellTd.innerHTML);
     if (cellTd._type === "treeNodeConstruct") {
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
     } else {
@@ -344,6 +348,7 @@ function insertDataRow(pos, record) {
     cell.onclick=myCellClickHandler;
     cell.ondblclick=myCellDblClickHandler;
     cell.onkeydown=myDataCellOnKeyDown;
+    cell.onblur=myDataCellOnBlur;
     if (j == 0) {
       cell._type = "treeNodeConstruct";
       cell._nodeConstruct = treeNodesList[recordId];
