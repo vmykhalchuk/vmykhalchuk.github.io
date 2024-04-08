@@ -1,0 +1,136 @@
+html {
+  height: 100%;
+}
+header, footer {
+  flex: none;
+  margin: 5px; margin-left: 1px;
+  padding: 5px; padding-left: 1px;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  height: 98%;
+}
+main {
+  overflow-y: auto;
+  flex: auto;
+}
+
+.textNextToSvg {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 10px; /* Adjust the value to add space between the image and text */
+  align-items: center;
+}
+
+.cont {
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+}
+.cont svg {
+  flex-shrink: 0;
+  height: 1em; /* Prevent scaling beyond text size */
+  width: 1em;
+}
+
+/*Roman's tweaks*/
+
+html {
+  background-color: _blue;
+}
+
+/*html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  display: table;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.row1 {
+  display: table-row;
+  /height: 50%;/
+}
+
+/*.row2 {
+  display: table-row;
+  height: 35px;
+}
+
+footer {
+    clear: both;
+    position: relative;
+    height: 200px;
+    margin-top: -200px;
+}*/
+
+td.ex2 {
+  border: 2px solid black;
+  outline-style: dotted;
+  outline-color: blue;
+  user-select: none;
+}
+
+td.ex3 {
+  border: 2px solid black;
+  outline-style: outset;
+  outline-color: grey;
+  /*transform: rotate(-90deg);*/
+  user-select: none;
+  /*writing-mode: vertical-rl;*/
+}
+
+
+td.cellNotSelected {
+}
+
+td.cellSelected {
+  outline-style: solid;
+  outline-color: red;
+  outline-width: 2px;
+  border-radius: 3px;
+  /*border: 1px solid blue;*/
+  
+  background-color:pink;
+}
+
+col.colNotSelected {
+}
+
+col.colSelected {
+  /*outline-style:dotted;*/
+  background-color:powderblue;
+}
+
+tr.rowNotSelected {
+}
+
+tr.rowSelected {
+  /*outline-style:dotted;*/
+  /*outline-style: dashed; outline-width: 1px; outline-color: grey;*/
+  /*background-color:pink;*/
+
+  outline-style: solid;
+  outline-color: green;
+  outline-width: 2px;
+  border-radius: 3px;
+}
+
+.monospace > span {
+  display: inline-block; /* Enable widths */
+  width: 8px;            /* Set width across all characters */
+  text-align: center;    /* Even out spacing */
+  outline:0px dotted red;
+  font-size:9px;
+  color:blue;
+  font-family:Verdana;
+  font-weight:normal;
+  background-color:none;
+
+}

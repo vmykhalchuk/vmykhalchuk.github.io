@@ -1,0 +1,8 @@
+
+
+make text editable: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable
+
+tabindex="0"
+
+split page using flex: https://medium.com/@kabir4691/css-use-flex-to-split-your-html-page-into-different-sections-e80070888138
+how to clear floats in CSS: https://levelup.gitconnected.com/how-to-clear-floats-in-css-269f05f411da

@@ -1,0 +1,10 @@
+	/*document.getElementById('div1').onclick = function(e) {
+ 		e = e || window.event;
+
+		//e.target.style["font-weight"] = "bold";
+    e.target.className = "ex2";
+  	//alert("Clicked: " + e.target.id);
+    
+		//var who= e.target || e.srcElement: '';
+		//if(who.tagName== 'TD') alert(who.id);
+	}*/

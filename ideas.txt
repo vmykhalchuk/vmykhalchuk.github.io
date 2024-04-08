@@ -1,0 +1,42 @@
+Types of pieces of information:
+ - link
+ - todo item (text note)
+ - idea (text notes)
+ - idea (picture)
+ - browser search page
+ - file (any from pc)
+ - contact
+
+Grouping of those pieces of information:
+ - Parent-Child relation (no graph needed)
+ - references to other nodes (kinda graph but limited)
+ -
+
+Additional data linked to the piece of information:
+ - time+location (system + user defined)
+ - description
+ - tags
+ - secure type (open data, sensitive, critical, etc.)
+ - how to inherit above data (down to children / get from parent, no inheritance, partial inheritance, etc.)
+
+- Security Aspect
+  - some data read-only or not even viewable (depending on user access)
+
+Additional ideas:
+ - heatmap of visits/edits -
+ - security aspect (read-only, not-visible, only data not visible (key visible but data masked))
+
+Questions to investigate deeper:
+ - alternative solutions to this system
+ - how to secure information
+
+
+
+Event driven:
+ - try to discover if will work without proper syncrhonization
+  - possible operations:
+    - add child (to parent_id after child_id (-1 - if first, -2 if there were no children, -3 if last after all children))
+    - delete node
+    - change node name
+    - change node attribute
+    - move node to another parent
