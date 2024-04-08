@@ -77,12 +77,12 @@ Example tree structure
 
 const treeNodesList = [
 "~ROOT",
-"╠~Node A",
-"║├Leaf A.1",
-"║└-Node A.2",
-"║ ╚Leaf A.2.1",
-"╚~Node B",
-" └Node B.1"
+"╠~Node&nbsp;A",
+"║├Leaf&nbsp;A.1",
+"║└-Node&nbsp;A.2",
+"║&nbsp;╚Leaf&nbsp;A.2.1",
+"╚~Node&nbsp;B",
+"&nbsp;└Node&nbsp;B.1"
 ];
 
 var func1 = function() {
@@ -287,7 +287,7 @@ function insertNaviRow(pos, navi) {
   cell.appendChild(cellText);
 }
 
-function insertRow(pos, record) {
+function insertDataRow(pos, record) {
   const mainTable = document.getElementById("mainTable");
   const row = mainTable.insertRow(pos);
   const recordId = record.id;
@@ -315,7 +315,7 @@ function insertRow(pos, record) {
       cell.style.padding="0px 0px 0px 0px";
       cell.style.borderLeftWidth="2px";
       cell.style.borderLeftStyle="solid";
-      cell.style.whiteSpace="nowrap";
+      cell.style.whiteSpace="pre"; //nowrap|pre
       
       
       if (false) {
@@ -390,7 +390,7 @@ function initialize() {
     ctx.height = page.to - page.from;
     for (var i = 0; i < ctx.height; i++) {
       const record = page.records[i];
-      insertRow(-1, record);
+      insertDataRow(-1, record);
     }
     
     insertNaviRow(0, {type: "top"});
