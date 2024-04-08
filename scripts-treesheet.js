@@ -315,6 +315,7 @@ function insertRow(pos, record) {
       cell.style.padding="0px 0px 0px 0px";
       cell.style.borderLeftWidth="2px";
       cell.style.borderLeftStyle="solid";
+      cell.style.whiteSpace="nowrap";
       
       
       if (false) {
