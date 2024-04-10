@@ -95,7 +95,7 @@ const treeNodesList2 = [
 "Node B.1"
 ];
 
-var ctx = {
+window.ctx = {
   x: 0,
   y: 0, // "top" - top row (load more); "bottom" - bottom row (load more)
   width: 4, height: 5,
@@ -226,7 +226,19 @@ function myNaviCellOnKeyDown(e) {
 }
 
 function myDataCellOnBlur(e) {
-  myDataCellOnKeyDown({keyCode: '13'});
+  //myDataCellOnKeyDown({keyCode: '130'});
+  if (ctx.editingCell) {
+    var cellTd = getCurrentEditableElement();
+    if (cellTd._type === "treeNodeConstruct") {
+      cellTd._nodeNameHTML = cellTd.innerHTML;
+      cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
+    }
+    cellTd.contentEditable = false;
+    ctx.editingCell = false;
+    
+    cellTd.blur();
+    document.getElementById("mainTable").focus();
+  }
 }
 
 function myDataCellOnKeyDown(e) {
@@ -236,7 +248,14 @@ function myDataCellOnKeyDown(e) {
       return;
     }
     var cellTd = getCurrentEditableElement();
-    if (cellTd._type === "treeNodeConstruct" && cellTd.contentEditable) {
+    cellTd.blur();
+  /*} else if (e.keyCode == '13') { // Enter
+    if (e.shiftKey) {
+      return;
+    }
+    var cellTd = getCurrentEditableElement();
+    console.log("ctx.editingCell=" + ctx.editingCell);
+    if (cellTd._type === "treeNodeConstruct" && ctx.editingCell) {
       cellTd._nodeNameHTML = cellTd.innerHTML;
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
     }
@@ -244,8 +263,8 @@ function myDataCellOnKeyDown(e) {
     ctx.editingCell = false;
     
     cellTd.blur();
-    document.getElementById("mainTable").focus();
-  } else if (e.keyCode == '27') { // Esc
+    document.getElementById("mainTable").focus();*/
+  /*} else if (e.keyCode == '27') { // Esc
     var cellTd = getCurrentEditableElement();
     if (cellTd._type === "treeNodeConstruct") {
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
@@ -256,7 +275,7 @@ function myDataCellOnKeyDown(e) {
     ctx.editingCell = false;
     
     cellTd.blur();
-    document.getElementById("mainTable").focus();
+    document.getElementById("mainTable").focus();*/
   }
 }
 
