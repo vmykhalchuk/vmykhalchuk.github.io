@@ -236,7 +236,7 @@ function myNaviCellOnKeyDown(e) {
 }
 
 function myDataCellOnBlur(e) {
-  myDataCellOnKeyDown({keyCode: '27'});
+  myDataCellOnKeyDown({keyCode: '13'});
 }
 
 function myDataCellOnKeyDown(e) {
@@ -251,20 +251,21 @@ function myDataCellOnKeyDown(e) {
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
     }
     cellTd.contentEditable = false;
-    cellTd.blur();
     ctx.editingCell = false;
+    
+    cellTd.blur();
     document.getElementById("mainTable").focus();
   } else if (e.keyCode == '27') { // Esc
     var cellTd = getCurrentEditableElement();
-    //alert(cellTd.innerHTML);
     if (cellTd._type === "treeNodeConstruct") {
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
     } else {
       cellTd.innerHTML = cellTd._savedInnerHTML;
     }
     cellTd.contentEditable = false;
-    cellTd.blur();
     ctx.editingCell = false;
+    
+    cellTd.blur();
     document.getElementById("mainTable").focus();
   }
 }
