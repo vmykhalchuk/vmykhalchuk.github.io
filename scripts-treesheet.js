@@ -95,16 +95,6 @@ const treeNodesList2 = [
 "Node B.1"
 ];
 
-var func1 = function() {
-  const para = document.createElement("td"); para.id="hhh";
-	const node = document.createTextNode("This is new.");
-	para.appendChild(node);
-
-	const div1 = document.getElementById("div1");
-	const child = document.getElementById("p1");
-	div1.insertBefore(para, child);
-}
-
 var ctx = {
   x: 0,
   y: 0, // "top" - top row (load more); "bottom" - bottom row (load more)
@@ -246,7 +236,7 @@ function myDataCellOnKeyDown(e) {
       return;
     }
     var cellTd = getCurrentEditableElement();
-    if (cellTd._type === "treeNodeConstruct") {
+    if (cellTd._type === "treeNodeConstruct" && cellTd.contentEditable) {
       cellTd._nodeNameHTML = cellTd.innerHTML;
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
     }
