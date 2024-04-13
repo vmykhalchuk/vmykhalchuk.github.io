@@ -244,11 +244,13 @@ function myDataCellOnBlur(e) {
 function myDataCellOnKeyDown(e) {
   e = e || window.event;
   if (e.keyCode == '13') { // Enter
+    //e.preventDefault();
     if (e.shiftKey) {
       return;
     }
     var cellTd = getCurrentEditableElement();
     cellTd.blur();
+    //myDataCellOnBlur();
   /*} else if (e.keyCode == '13') { // Enter
     if (e.shiftKey) {
       return;
@@ -308,6 +310,7 @@ function editCellStart() {
   ctx.editingCell = true;
   cellTd.contentEditable = true; //"plaintext-only" allows only plain text to be entered/inserted
   cellTd.focus();
+  selectElementContents(cellTd);
 }
 
 function myCreateSvg() {
