@@ -29,7 +29,6 @@ function selectElementContents(el) {
 
 function setCursorAtEnd(el) {
   var range = document.createRange();
-  var textNode = Del.lastChild;
   var textNode = el.lastChild;
   range.setStart(textNode, textNode.length);
   range.setEnd(textNode, textNode.length);
