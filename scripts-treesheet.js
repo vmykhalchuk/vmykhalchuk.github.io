@@ -256,7 +256,7 @@ function myDataCellOnKeyDown(e) {
     ctx.editingCell = false;
     
     cellTd.blur();
-    document.getElementById("mainTable").focus();*/
+    if (!ctx.isMobile) document.getElementById("mainTable").focus();*/
   /*} else if (e.keyCode == '27') { // Esc
     var cellTd = getCurrentEditableElement();
     if (cellTd._type === "treeNodeConstruct") {
@@ -268,7 +268,7 @@ function myDataCellOnKeyDown(e) {
     ctx.editingCell = false;
     
     cellTd.blur();
-    document.getElementById("mainTable").focus();*/
+    if (!ctx.isMobile) document.getElementById("mainTable").focus();*/
   }
 }
 
@@ -301,7 +301,7 @@ function editCellStart() {
   ctx.editingCell = true;
   cellTd.contentEditable = true; //"plaintext-only" allows only plain text to be entered/inserted
   cellTd.focus();
-  setCursorAtEnd(cellTd); //selectElementContents(cellTd);
+  setCursorAtEnd(cellTd); //selectElementContents(cellTd); <- to select whole text
 }
 
 function myCreateSvg() {
