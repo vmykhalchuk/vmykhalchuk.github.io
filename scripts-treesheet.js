@@ -96,6 +96,7 @@ const treeNodesList2 = [
 ];
 
 window.ctx = {
+  isMobile: false,
   x: 0,
   y: 0, // "top" - top row (load more); "bottom" - bottom row (load more)
   width: 4, height: 5,
@@ -219,6 +220,8 @@ function myCellDblClickHandler(e) {
  	e = e || window.event;
   const cell = e.target;
 
+  if (ctx.editingCell) return;
+
   ctx.lastCellClickedX = null; ctx.lastCellClickedY = null;
   myCellClickHandlerBasic(cell);
   editCellStart();
@@ -245,6 +248,9 @@ function myDataCellOnBlur(e) {
 
 function myDataCellOnKeyDown(e) {
   e = e || window.event;
+  
+  if (ctx.isMobile) return;
+  
   if (e.keyCode == '13') { // Enter
     //e.preventDefault();
     if (e.shiftKey) {
@@ -453,6 +459,10 @@ function insertDataRow(pos, record) {
 }
 
 function initialize() {
+  ctx.isMobile = mobileCheck();
+  const appVDiv = document.getElementById("appVersionDiv");
+  appVDiv.innerText = appVDiv.innerText + "<" + (ctx.isMobile ? 'm' : 'd') + ">";
+  
   var page = {from: 00, to: 40, records: []};
   
   var onRecordFn = function(rec) {
