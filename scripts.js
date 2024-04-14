@@ -26,3 +26,17 @@ function selectElementContents(el) {
   sel.removeAllRanges();
   sel.addRange(range);
 }
+
+function setCursorAtEnd(el) {
+  var range = document.createRange();
+  var textNode = Del.lastChild;
+  var textNode = el.lastChild;
+  range.setStart(textNode, textNode.length);
+  range.setEnd(textNode, textNode.length);
+  //range.setEndAfter(el);
+  //range.setStartAfter(el);
+
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}

@@ -312,7 +312,7 @@ function editCellStart() {
   ctx.editingCell = true;
   cellTd.contentEditable = true; //"plaintext-only" allows only plain text to be entered/inserted
   cellTd.focus();
-  selectElementContents(cellTd);
+  setCursorAtEnd(cellTd); //selectElementContents(cellTd);
 }
 
 function myCreateSvg() {
