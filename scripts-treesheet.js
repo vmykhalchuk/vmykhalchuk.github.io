@@ -225,7 +225,7 @@ function myDataCellOnBlur(e) {
     ctx.editingCell = false;
     
     cellTd.blur();
-    document.getElementById("mainTable").focus();
+    if (!ctx.isMobile) document.getElementById("mainTable").focus();
   }
 }
 
