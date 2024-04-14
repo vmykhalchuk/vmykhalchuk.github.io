@@ -19,6 +19,24 @@ function strip(html) {
   return tempDiv.innerText;
 }
 
+function scrollIntoViewIfNeeded(cellTd) {
+  // docs: https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
+  cellTd.scrollIntoView({ behavior: "instant", block: "nearest", inline: "nearest"});
+
+  /* below code was v0.1 which worked well, till I replaced with above line
+  const mainRect = document.getElementById("main01").getBoundingClientRect();
+  const rect = cellTd.getBoundingClientRect();
+  //console.log("4up: top: " + (rect.top - mainRect.top) + " bottom: " + (rect.bottom - mainRect.top));
+  if ((rect.top - mainRect.top)<0 || (rect.bottom - mainRect.top)<0) {
+    cellTd.scrollIntoView(true);
+  }
+  //console.log("4dn: top: " + (mainRect.bottom - rect.top) + " bottom: " + (mainRect.bottom - rect.bottom));
+  if ((mainRect.bottom - rect.top)<0 || (mainRect.bottom - rect.bottom)<0) {
+    cellTd.scrollIntoView(false);
+  }
+  */
+}
+
 function selectElementContents(el) {
   var range = document.createRange();
   range.selectNodeContents(el);
