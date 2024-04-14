@@ -204,6 +204,8 @@ function myCellClickHandlerBasic(cell) {
 function myCellClickHandler(e) {
  	e = e || window.event;
 
+  if (ctx.editingCell) return;
+  
   myCellClickHandlerBasic(e.target);
 
   var cellWasAlreadySelected = (ctx.lastCellClickedX === ctx.x) && (ctx.lastCellClickedY === ctx.y);
