@@ -224,8 +224,7 @@ function myDataCellOnBlur(e) {
     cellTd.contentEditable = false;
     ctx.editingCell = false;
     
-    cellTd.blur();
-    if (!ctx.isMobile) document.getElementById("mainTable").focus();
+    if (!ctx.isMobile) { cellTd.blur(); document.getElementById("mainTable").focus(); }
   }
 }
 
@@ -240,7 +239,7 @@ function myDataCellOnKeyDown(e) {
       return;
     }
     var cellTd = getCurrentEditableElement();
-    cellTd.blur();
+    if (!ctx.isMobile) cellTd.blur();
     //myDataCellOnBlur();
   /*} else if (e.keyCode == '13') { // Enter
     if (e.shiftKey) {
@@ -267,8 +266,7 @@ function myDataCellOnKeyDown(e) {
     cellTd.contentEditable = false;
     ctx.editingCell = false;
     
-    cellTd.blur();
-    if (!ctx.isMobile) document.getElementById("mainTable").focus();*/
+    if (!ctx.isMobile) { cellTd.blur(); document.getElementById("mainTable").focus(); }*/
   }
 }
 
@@ -300,7 +298,7 @@ function editCellStart() {
   }
   ctx.editingCell = true;
   cellTd.contentEditable = true; //"plaintext-only" allows only plain text to be entered/inserted
-  cellTd.focus();
+  if (!ctx.isMobile) cellTd.focus();
   setCursorAtEnd(cellTd); //selectElementContents(cellTd); <- to select whole text
 }
 
