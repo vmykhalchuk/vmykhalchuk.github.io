@@ -1,10 +1,21 @@
+table.forTryHtmlTable-4grid td {
+  /*outline-style: solid;
+  outline-color: red;
+  outline-width: 2px;
+  border-radius: 3px;*/
+  padding: 0px 0px 0px 0px;
+  border-right: 4px dashed green;
+  
+  background-color:transparent !important;
+}
+
 table.forTryHtmlTable td {
   /*outline-style: solid;
   outline-color: red;
   outline-width: 2px;
   border-radius: 3px;*/
   padding: 0px 0px 0px 0px;
-  border-right: 1px dashed blue;
+  border-right: 4px dashed blue;
   
-  /*background-color:pink;*/
+  background-color:pink;
 }

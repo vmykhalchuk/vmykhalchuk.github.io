@@ -38,11 +38,13 @@ Example tree structure
 // v3
 ~ROOT
 ╠~Node A
-║├Leaf A.1
-║└-Node A.2
-║ ╚Leaf A.2.1
+║├-Leaf A.1
+║├~Node A.2
+║│╚-Leaf A.2.1
+║└+Node A.3
 ╚~Node B
- └+Node B.1
+ └~Node B.1
+  ╚-Leaf
 
 // v4
 ║│║│▼ RNODE
@@ -75,6 +77,8 @@ Example tree structure
 
 */
 
+const debugTree = true;
+
 const treeNodesList = [
 "~",
 "╠~",
@@ -100,6 +104,14 @@ window.ctx = {
   x: 0,
   y: 0, // "top" - top row (load more); "bottom" - bottom row (load more)
   width: 4, height: 5,
+  
+  rootId: 0,
+  // nodes Map consists of objects {id, parentId, descr, data}, and is mapped by every object id
+  nodes: new Map(), // id => node
+  nodeIdsByParentId: new Map(), // parentId => set of nodeIds
+  openNodeIds: new Set(),
+  nextNodeId: new Map(), // nodeId => nodeId
+  prevNodeId: new Map(), // nodeId => nodeId
   
   editingCell: false
 }
@@ -278,12 +290,7 @@ function myCellOnInputHandler(e) {
 
 function getCurrentEditableElement() {
   if (isNaN(ctx.y)) return null;
-  const cellTd = document.getElementById("data_"+ctx.y+"_"+ctx.x);
-  if (cellTd._t === "treeNode") {
-    return cellTd.childNodes[0].childNodes[1];
-  } else {
-    return cellTd;
-  }
+  return document.getElementById("data_"+ctx.y+"_"+ctx.x);
 }
 
 function editCellStart() {
@@ -339,6 +346,56 @@ function insertNaviRow(pos, navi) {
   cell.appendChild(cellText);
 }
 
+// v3
+//~ROOT
+//╠~Node A
+//║├ Leaf A.1
+//║├~Node A.2
+//║│╚ Leaf A.2.1
+//║└+Node A.3
+//╚~Node B
+// └~Node B.1
+//  ╚ Leaf
+
+function createTreeScaffold(record) {
+  let res = "";
+  if (record.children.length > 0) {
+    res = ctx.openNodeIds.has(record.id) ? "-" : "+";
+  } else {
+    res = " ";//"·";
+  }
+  let r = record;
+  let v1 = true;
+  while (true) {
+    if (r.id === ctx.rootId) {
+      return res;
+    }
+    
+    let s;
+    let p = ctx.nodes.get(r.parentId);
+    if (p.children[p.children.length - 1] !== r.id) {
+      s = v1 ? "├" : "│";
+    } else {
+      s = v1 ? "└" : " ";
+    }
+    v1 = false;
+    res = s + res;
+    
+    r = ctx.nodes.get(r.parentId);
+  }
+  
+  return res;
+}
+
+function enhanceTreeScaffold(txt) {
+  
+  let res = "<font color='red'>" + txt.substr(txt.length - 1) + "</font>";
+  txt = txt.substr(0, txt.length - 1);
+  
+  res = txt + res;
+  return res;
+}
+
 function insertDataRow(pos, record) {
   const mainTable = document.getElementById("mainTable");
   const row = mainTable.insertRow(pos);
@@ -353,17 +410,18 @@ function insertDataRow(pos, record) {
     cell.onblur=myDataCellOnBlur;
     if (j == 0) {
       cell._type = "treeNodeConstruct";
-      cell._nodeConstruct = treeNodesList[recordId];
-      cell._nodeNameHTML = treeNodesList2[recordId];
+      cell._nodeConstruct = enhanceTreeScaffold(createTreeScaffold(record));//treeNodesList[recordId];
+      cell._nodeNameHTML = record.descr;//treeNodesList2[recordId];
       const elSpan = document.createElement("span");
-      if (recordId < treeNodesList.length) {
-        const t = treeNodesList[recordId];
+      if (true) { //recordId < treeNodesList.length) {
+        cell._nodeConstructHTML = cell._nodeConstruct;
+        /*const t = treeNodesList[recordId];
         if (t.length <= 2) {
           cell._nodeConstructHTML = "<font color='red'>" + t.substr(0,1) + "</font>" + t.substr(1);
         } else {
           cell._nodeConstructHTML = "<font color='red'>" + t.substr(0,1) + "</font>" + t.substr(1,1)
                   + "<font color='red'>" + t.substr(2,1) + "</font>" + t.substr(3);
-        }
+        }*/
         elSpan.innerHTML = cell._nodeConstructHTML + cell._nodeNameHTML;
       } else {
         elSpan.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;<b>D</b>um";
@@ -426,7 +484,7 @@ function insertDataRow(pos, record) {
         }
         cell.style.fontFamily = "monospace";
       }
-      if (j == 4) textVal = record.data.value;
+      if (j == 4) textVal = record.data ? record.data.value : "<u><i>empty</i></u>";
       const cellText = document.createTextNode(textVal);
       cell.appendChild(cellText);
 
@@ -444,18 +502,50 @@ function initialize() {
   const appVDiv = document.getElementById("appVersionDiv");
   appVDiv.innerText = appVDiv.innerText + "<" + (ctx.isMobile ? 'm' : 'd') + ">";
   
-  var page = {from: 00, to: 40, records: []};
+  let page = {from: 00, to: 40, records: []};
   
-  var onRecordFn = function(rec) {
+  let onRecordFn = function(rec) {
     page.records.push(rec);
   }
-  
-  var onPageLoadedFn = function() {
+    
+  let onPageLoadedFn = function() {
     ctx.width = 5;
-    ctx.height = page.to - page.from;
-    for (var i = 0; i < ctx.height; i++) {
+    /*ctx.height = page.to - page.from;
+    for (let i = 0; i < ctx.height; i++) {
       const record = page.records[i];
       insertDataRow(-1, record);
+    }*/
+    
+    ctx.height = 0;
+    ctx.rootId = -100; // initialize rootId (load from DataSource)
+    const recs = exampleData.nodes;
+    for (const r of recs) {
+      ctx.nodes.set(r.id, r);
+      if (!ctx.nodeIdsByParentId.has(r.parentId)) {
+        ctx.nodeIdsByParentId.set(r.parentId, new Set());
+      }
+      ctx.nodeIdsByParentId.get(r.parentId).add(r.id);
+    }
+    ctx.openNodeIds.add(ctx.rootId);
+    
+    for (const r of recs) {
+      if (r.id === ctx.rootId) {
+        insertDataRow(-1, r);
+        ctx.height++;
+        ctx.y = ctx.rootId;
+        ctx.x = 0;
+        break;
+      }
+    }
+    for (const r of recs) {
+      if (debugTree || r.parentId === ctx.rootId) {
+        if (debugTree) {
+          if (r.id === ctx.rootId) continue;
+          if (r.children.length > 0) ctx.openNodeIds.add(r.id);
+        }
+        insertDataRow(-1, r);
+        ctx.height++;
+      }
     }
     
     insertNaviRow(0, {type: "top"});
@@ -465,6 +555,12 @@ function initialize() {
   }
   
   dsFetch(page.from, page.to, {onRecord: onRecordFn, onCompleted: onPageLoadedFn});
+}
+
+function onExpandCollapseButtonClick() {
+  const cellTd = getCurrentEditableElement();
+  if (!cellTd) alert("No cell selected!")
+  else alert("cell: " + cellTd.id);
 }
 
 window.onload= function() {

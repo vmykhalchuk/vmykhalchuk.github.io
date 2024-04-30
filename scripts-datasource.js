@@ -22,6 +22,10 @@
     101: "House" $notes_folder
       105: "Daily" $notes_folder
         111: "Electricity" $text_note
+        112: "Electricity" $text_note
+        113: "Electricity" $text_note
+        114: "Electricity" $text_note
+        115: "Electricity" $text_note
     102: "Daily ideas"
       
   500: "MY PROJECTS" $projects_book
@@ -41,26 +45,27 @@
 */
 var exampleData = {
   nodes: [
-    {id: 100, parentId: 0, descr: "MY NOTES", data: {type: "notes_book"}},
-    {id: 101, parentId: 100, descr: "House", data: {type: "notes_folder"}},
-    {id: 105, parentId: 101, descr: "Daily", data: {type: "notes_folder"}},
-    {id: 111, parentId: 105, descr: "Electricity", data: {type: "text_note"}},
-    {id: 102, parentId: 100, descr: "Daily ideas", data: {type: "notes_folder"}},
-    
-    {id: 500, parentId: 0, descr: "MY PROJECTS", data: {type: "projects_book"}},
-    {id: 551, parentId: 500, descr: "Electronic", data: {type: "projects_folder"}},
-    {id: 555, parentId: 551, descr: "High voltage", data: {type: "projects_folder"}},
-    {id: 556, parentId: 555, descr: "ne555 12v to 400v", data: {type: "project"}},
-    {id: 558, parentId: 556, descr: "idea1: jkhljhj", data: {type: "text_note"}},
-
-    {id: 700, parentId: 0, descr: "PURCHASES (transactions)", data: {type: "purchase_book"}},
-    {id: 701, parentId: 700, descr: "Aliexpress", data: {type: "purchase_folder"}},
-    {id: 702, parentId: 701, descr: "2023.10", data: {type: "purchase"}},
-    {id: 707, parentId: 702, descr: "3W Leds @ $5/10pcs", data: {type: "product", status: "received"}},
-
-    {id: 710, parentId: 700, descr: "Kosmodrom", data: {type: "purchase_folder"}},
-    {id: 711, parentId: 710, descr: "2021.11.17", data: {type: "purchase"}},
-    {id: 712, parentId: 711, descr: "resistors 220k", data: {type: "product", status: "paid"}}
+    {id:-100, parentId: null, children:[100,500,700], descr: "ROOT!!!"},
+                                                                                                       
+    {id: 100, parentId: -100, children:[101,102],       descr: "MY NOTES", meta: {hasChildren: true}, data: {type: "notes_book"}},
+    {id: 101, parentId: 100,  children:[105],             descr: "House", data: {type: "notes_folder"}},
+    {id: 105, parentId: 101,  children:[111],               descr: "Daily", data: {type: "notes_folder"}},
+    {id: 111, parentId: 105,  children:[],                    descr: "Electricity", data: {type: "text_note"}},
+    {id: 102, parentId: 100,  children:[],                descr: "Daily ideas", data: {type: "notes_folder"}},
+                                                                                                   
+    {id: 500, parentId: -100, children:[551],           descr: "MY PROJECTS", data: {type: "projects_book"}},
+    {id: 551, parentId: 500,  children:[555],             descr: "Electronic", data: {type: "projects_folder"}},
+    {id: 555, parentId: 551,  children:[556],               descr: "High voltage", data: {type: "projects_folder"}},
+    {id: 556, parentId: 555,  children:[558],                 descr: "ne555 12v to 400v", data: {type: "project"}},
+    {id: 558, parentId: 556,  children:[],                      descr: "idea1: jkhljhj", data: {type: "text_note"}},
+                                                                                                     
+    {id: 700, parentId: -100, children:[701,710],       descr: "PURCHASES (transactions)", data: {type: "purchase_book"}},
+    {id: 701, parentId: 700,  children:[702],             descr: "Aliexpress", data: {type: "purchase_folder"}},
+    {id: 702, parentId: 701,  children:[707],               descr: "2023.10", data: {type: "purchase"}},
+    {id: 707, parentId: 702,  children:[],                    descr: "3W Leds @ $5/10pcs", data: {type: "product", status: "received"}},
+    {id: 710, parentId: 700,  children:[711],             descr: "Kosmodrom", data: {type: "purchase_folder"}},
+    {id: 711, parentId: 710,  children:[712],               descr: "2021.11.17", data: {type: "purchase"}},
+    {id: 712, parentId: 711,  children:[],                    descr: "resistors 220k", data: {type: "product", status: "paid"}}
   ]
 };
 
