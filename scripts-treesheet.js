@@ -138,6 +138,55 @@ function selectCell(x, y, movingUp) {
   if (!ctx.isMobile) scrollIntoViewIfNeeded(cellTd.parentElement);
 }
 
+function _pos(list, id) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i] === id) return i;
+  }
+  return null;
+}
+
+// find latest node of {id} subtree (take into account closed nodes)
+function findLatestOpenNodeFor(id) {
+  while (true) {
+    let n = ctx.nodes.get(id);
+    if (n.children.length === 0 || !ctx.openNodeIds.has(id)) return id;
+    id = n.children[n.children.length - 1];
+  }
+}
+
+function findNavigatedPreviousId(id) {
+  if (id === ctx.rootId) {
+    return ctx.rootId;
+  }
+  let parent = ctx.nodes.get(ctx.nodes.get(id).parentId);
+  let pos = _pos(parent.children, id);
+  if (pos === 0) {
+    return parent.id;
+  } else {
+    id = parent.children[pos - 1];
+    return findLatestOpenNodeFor(id);
+  }
+}
+
+function findNavigatedNextId(id) {
+  let n = ctx.nodes.get(id);
+  if (n.children.length > 0 && ctx.openNodeIds.has(id)) {
+    return n.children[0];
+  }
+  
+  while (true) {
+    if (n.id === ctx.rootId) return null;
+    
+    let p = ctx.nodes.get(n.parentId);
+    let nPos = _pos(p.children, n.id);
+    if (nPos < (p.children.length - 1)) {
+      return p.children[nPos + 1];
+    } else {
+      n = p;
+    }
+  }
+}
+
 function myMove(dir) {
   deselectCell(ctx.x, ctx.y);
   if (dir === "right" && ctx.y !== "top" && ctx.y !=="bottom" && ctx.x < (ctx.width-1)) {
@@ -145,20 +194,23 @@ function myMove(dir) {
   } else if (dir === "left" && ctx.y !== "top" && ctx.y !=="bottom" && ctx.x > 0) {
     ctx.x--;
   } else if (dir === "up") {
-    if (ctx.y > 0) {
-      ctx.y--;
+    if (ctx.y === "top") {
     } else if (ctx.y === "bottom") {
-      ctx.y = ctx.height-1;
+      ctx.y = findLatestOpenNodeFor(ctx.rootId);
     } else {
-      ctx.y = "top";
+      ctx.y = (ctx.y === ctx.rootId) ? "top" : findNavigatedPreviousId(ctx.y);
     }
   } else if (dir === "down") {
-    if (ctx.y >= 0 && ctx.y < (ctx.height-1)) {
-      ctx.y++;
-    } else if (ctx.y === "top") {
-      ctx.y = 0;
+    if (ctx.y === "top") {
+      ctx.y = ctx.rootId;
+    } else if (ctx.y === "bottom") {
     } else {
-      ctx.y = "bottom";
+      let nextId = findNavigatedNextId(ctx.y);
+      if (nextId === null) {
+        ctx.y = "bottom";
+      } else {
+        ctx.y = nextId;
+      }
     }
   }
   selectCell(ctx.x, ctx.y);
@@ -387,13 +439,27 @@ function createTreeScaffold(record) {
   return res;
 }
 
+const scaffoldColors = ["black", "blue", "orange"];
+
 function enhanceTreeScaffold(txt) {
   
   let res = "<font color='red'>" + txt.substr(txt.length - 1) + "</font>";
   txt = txt.substr(0, txt.length - 1);
   
-  res = txt + res;
-  return res;
+  let resTxt = "";
+  for (let i = 0; i < txt.length; i++) {
+    let c = txt.charAt(i);
+    if (i % 2 == 0) {
+      if      (c === '│') c = '║';
+      else if (c === '├') c = '╠';
+      else if (c === '└') c = '╚';
+    }
+    let color = scaffoldColors[i % scaffoldColors.length];
+    resTxt += "<font color='" + color + "'>" + c + "</font>";
+  }
+  
+  res = resTxt + res;
+  return "<font size='5'>" + res + "</font>";
 }
 
 function insertDataRow(pos, record) {
@@ -413,19 +479,9 @@ function insertDataRow(pos, record) {
       cell._nodeConstruct = enhanceTreeScaffold(createTreeScaffold(record));//treeNodesList[recordId];
       cell._nodeNameHTML = record.descr;//treeNodesList2[recordId];
       const elSpan = document.createElement("span");
-      if (true) { //recordId < treeNodesList.length) {
-        cell._nodeConstructHTML = cell._nodeConstruct;
-        /*const t = treeNodesList[recordId];
-        if (t.length <= 2) {
-          cell._nodeConstructHTML = "<font color='red'>" + t.substr(0,1) + "</font>" + t.substr(1);
-        } else {
-          cell._nodeConstructHTML = "<font color='red'>" + t.substr(0,1) + "</font>" + t.substr(1,1)
-                  + "<font color='red'>" + t.substr(2,1) + "</font>" + t.substr(3);
-        }*/
-        elSpan.innerHTML = cell._nodeConstructHTML + cell._nodeNameHTML;
-      } else {
-        elSpan.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;<b>D</b>um";
-      }
+      
+      cell._nodeConstructHTML = cell._nodeConstruct;
+      elSpan.innerHTML = cell._nodeConstructHTML + cell._nodeNameHTML;
 
       cell.style.fontFamily = "monospace";
       cell.appendChild(elSpan);

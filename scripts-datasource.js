@@ -45,13 +45,23 @@
 */
 var exampleData = {
   nodes: [
-    {id:-100, parentId: null, children:[100,500,700], descr: "ROOT!!!"},
+    {id:-100, parentId: null, children:[100,301,302,303,304,305,306,307,308,309,500,700], descr: "ROOT!!!"},
                                                                                                        
     {id: 100, parentId: -100, children:[101,102],       descr: "MY NOTES", meta: {hasChildren: true}, data: {type: "notes_book"}},
     {id: 101, parentId: 100,  children:[105],             descr: "House", data: {type: "notes_folder"}},
     {id: 105, parentId: 101,  children:[111],               descr: "Daily", data: {type: "notes_folder"}},
     {id: 111, parentId: 105,  children:[],                    descr: "Electricity", data: {type: "text_note"}},
     {id: 102, parentId: 100,  children:[],                descr: "Daily ideas", data: {type: "notes_folder"}},
+                                                                                                   
+    {id: 301, parentId: -100, children:[],              descr: "Folder 1", data: {type: "projects_book"}},
+    {id: 302, parentId: -100, children:[],              descr: "Folder 2", data: {type: "projects_book"}},
+    {id: 303, parentId: -100, children:[],              descr: "Folder 3", data: {type: "projects_book"}},
+    {id: 304, parentId: -100, children:[],              descr: "Folder 4", data: {type: "projects_book"}},
+    {id: 305, parentId: -100, children:[],              descr: "Folder 5", data: {type: "projects_book"}},
+    {id: 306, parentId: -100, children:[],              descr: "Folder 6", data: {type: "projects_book"}},
+    {id: 307, parentId: -100, children:[],              descr: "Folder 7", data: {type: "projects_book"}},
+    {id: 308, parentId: -100, children:[],              descr: "Folder 8", data: {type: "projects_book"}},
+    {id: 309, parentId: -100, children:[],              descr: "Folder 9", data: {type: "projects_book"}},
                                                                                                    
     {id: 500, parentId: -100, children:[551],           descr: "MY PROJECTS", data: {type: "projects_book"}},
     {id: 551, parentId: 500,  children:[555],             descr: "Electronic", data: {type: "projects_folder"}},
