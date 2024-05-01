@@ -108,8 +108,8 @@ window.ctx = {
   rootId: 0,
   // nodes Map consists of objects {id, parentId, descr, data}, and is mapped by every object id
   nodes: new Map(), // id => node
-  nodeIdsByParentId: new Map(), // parentId => set of nodeIds
   openNodeIds: new Set(),
+  nodeIdsByParentId: new Map(), // parentId => set of nodeIds
   nextNodeId: new Map(), // nodeId => nodeId
   prevNodeId: new Map(), // nodeId => nodeId
   
@@ -260,7 +260,7 @@ function myCellClickHandler(e) {
   ctx.lastCellClickedX = ctx.x;
   ctx.lastCellClickedY = ctx.y;
 
-  if (cellWasAlreadySelected) editCellStart();
+  if (cellWasAlreadySelected) { editCellStart(); navigator.vibrate([200, 100, 200]); }
 }
 
 function myCellDblClickHandler(e) {
@@ -373,7 +373,6 @@ function myInsertChildrenNodes(nodeId) {
 
 function myToggleCurrentlySelectedNode() {
   if (isNaN(ctx.y) || ctx.nodes.get(ctx.y).children.length == 0) return;
-  
   if (ctx.openNodeIds.has(ctx.y)) {
     ctx.openNodeIds.delete(ctx.y);
     // change - to +
@@ -387,7 +386,6 @@ function myToggleCurrentlySelectedNode() {
     // add children nodes
     myInsertChildrenNodes(ctx.y);
   }
-  //insertDataRowAfterNodeId(ctx.y, {});
 }
 
 function getSelectedTableCell() {
