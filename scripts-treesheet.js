@@ -77,7 +77,7 @@ Example tree structure
 
 */
 
-const debugTree = true;
+const debugTreeByLoadingManyNodes = false;
 
 const treeNodesList = [
 "~",
@@ -280,7 +280,7 @@ function myNaviCellOnKeyDown(e) {
 function myDataCellOnBlur(e) {
   //myDataCellOnKeyDown({keyCode: '130'});
   if (ctx.editingCell) {
-    var cellTd = getCurrentEditableElement();
+    var cellTd = getSelectedTableCell();
     if (cellTd._type === "treeNodeConstruct") {
       cellTd._nodeNameHTML = cellTd.innerHTML;
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
@@ -302,14 +302,14 @@ function myDataCellOnKeyDown(e) {
     if (e.shiftKey) {
       return;
     }
-    var cellTd = getCurrentEditableElement();
+    var cellTd = getSelectedTableCell();
     if (!ctx.isMobile) cellTd.blur();
     //myDataCellOnBlur();
   /*} else if (e.keyCode == '13') { // Enter
     if (e.shiftKey) {
       return;
     }
-    var cellTd = getCurrentEditableElement();
+    var cellTd = getSelectedTableCell();
     console.log("ctx.editingCell=" + ctx.editingCell);
     if (cellTd._type === "treeNodeConstruct" && ctx.editingCell) {
       cellTd._nodeNameHTML = cellTd.innerHTML;
@@ -321,7 +321,7 @@ function myDataCellOnKeyDown(e) {
     cellTd.blur();
     if (!ctx.isMobile) document.getElementById("mainTable").focus();*/
   /*} else if (e.keyCode == '27') { // Esc
-    var cellTd = getCurrentEditableElement();
+    var cellTd = getSelectedTableCell();
     if (cellTd._type === "treeNodeConstruct") {
       cellTd.innerHTML = cellTd._nodeConstructHTML + cellTd._nodeNameHTML;
     } else {
@@ -340,13 +340,69 @@ function myCellOnInputHandler(e) {
   // FIXME obfuscate html tags to keep formatting only (remove all tags but <b><i><font> etc)
 }
 
-function getCurrentEditableElement() {
+function myRefreshScaffoldForRow(id) {
+  let scaffoldCell = document.getElementById("data_" + ctx.y + "_0");
+  scaffoldCell._nodeConstructHTML = enhanceTreeScaffold(createTreeScaffold(ctx.nodes.get(id)));
+  scaffoldCell.children[0].innerHTML = scaffoldCell._nodeConstructHTML + scaffoldCell._nodeNameHTML;
+}
+
+function myDeleteNodeChildren(id) {
+  const mainTable = document.getElementById("mainTable");
+  let n = ctx.nodes.get(id);
+  for (let i = 0; i < n.children.length; i++) {
+    let cId = n.children[i];
+    if (ctx.openNodeIds.has(cId)) myDeleteNodeChildren(cId);
+    let domEl = getTableRowByNodeId(cId);
+    // domEl.style.display = 'none'; // <- use to hide and not delete (to save performance)
+    mainTable.deleteRow(domEl.rowIndex);
+  }
+}
+
+function myInsertChildrenNodes(nodeId) {
+  //if (ctx.openNodeIds.has(nodeId)) 
+  let n = ctx.nodes.get(nodeId);
+  let afterId = n.id;
+  for (let i = 0; i < n.children.length; i++) {
+    let c = ctx.nodes.get(n.children[i]);
+    insertDataRowAfterNodeId(afterId, c);
+    afterId = c.id;
+    if (ctx.openNodeIds.has(c.id)) afterId = myInsertChildrenNodes(c.id);
+  }
+  return afterId;
+}
+
+function myToggleCurrentlySelectedNode() {
+  if (isNaN(ctx.y) || ctx.nodes.get(ctx.y).children.length == 0) return;
+  
+  if (ctx.openNodeIds.has(ctx.y)) {
+    ctx.openNodeIds.delete(ctx.y);
+    // change - to +
+    myRefreshScaffoldForRow(ctx.y);
+    // delete closed children
+    myDeleteNodeChildren(ctx.y);
+  } else {
+    ctx.openNodeIds.add(ctx.y);
+    // change + to -
+    myRefreshScaffoldForRow(ctx.y);
+    // add children nodes
+    myInsertChildrenNodes(ctx.y);
+  }
+  //insertDataRowAfterNodeId(ctx.y, {});
+}
+
+function getSelectedTableCell() {
   if (isNaN(ctx.y)) return null;
   return document.getElementById("data_"+ctx.y+"_"+ctx.x);
 }
 
+function getTableRowByNodeId(nodeId) {
+  const cellId = "data_" + nodeId + "_" + 0;
+  const row = document.getElementById(cellId).parentElement;
+  return row;
+}
+
 function editCellStart() {
-  const cellTd = getCurrentEditableElement();
+  const cellTd = getSelectedTableCell();
   if (!cellTd) return;
   
   if (cellTd._type === "treeNodeConstruct") {
@@ -462,11 +518,20 @@ function enhanceTreeScaffold(txt) {
   return "<font size='5'>" + res + "</font>";
 }
 
+function insertDataRowAfterNodeId(nodeId, record) {
+  const row = getTableRowByNodeId(nodeId);
+  insertDataRow(row.rowIndex + 1, record);
+}
+
 function insertDataRow(pos, record) {
   const mainTable = document.getElementById("mainTable");
   const row = mainTable.insertRow(pos);
+  populateRow(row, record);
+}
+
+function populateRow(row, record) {
   const recordId = record.id;
-  row.record = record;
+  //row.record = record;
   for (let j = 0; j < ctx.width; j++) {
     const cell = row.insertCell(-1);
     cell.id="data_" + recordId + "_" + j;
@@ -476,11 +541,10 @@ function insertDataRow(pos, record) {
     cell.onblur=myDataCellOnBlur;
     if (j == 0) {
       cell._type = "treeNodeConstruct";
-      cell._nodeConstruct = enhanceTreeScaffold(createTreeScaffold(record));//treeNodesList[recordId];
+      cell._nodeConstructHTML = enhanceTreeScaffold(createTreeScaffold(record));//treeNodesList[recordId];
       cell._nodeNameHTML = record.descr;//treeNodesList2[recordId];
       const elSpan = document.createElement("span");
       
-      cell._nodeConstructHTML = cell._nodeConstruct;
       elSpan.innerHTML = cell._nodeConstructHTML + cell._nodeNameHTML;
 
       cell.style.fontFamily = "monospace";
@@ -594,8 +658,8 @@ function initialize() {
       }
     }
     for (const r of recs) {
-      if (debugTree || r.parentId === ctx.rootId) {
-        if (debugTree) {
+      if (debugTreeByLoadingManyNodes || r.parentId === ctx.rootId) {
+        if (debugTreeByLoadingManyNodes) {
           if (r.id === ctx.rootId) continue;
           if (r.children.length > 0) ctx.openNodeIds.add(r.id);
         }
@@ -614,9 +678,7 @@ function initialize() {
 }
 
 function onExpandCollapseButtonClick() {
-  const cellTd = getCurrentEditableElement();
-  if (!cellTd) alert("No cell selected!")
-  else alert("cell: " + cellTd.id);
+  myToggleCurrentlySelectedNode();
 }
 
 window.onload= function() {
@@ -633,7 +695,6 @@ window.onload= function() {
     var mainTable = document.getElementById("mainTable");
     //if (!mainTable.hasFocus()) return;
     if (document.activeElement !== mainTable) return;
-    
     
     if (e.keyCode == '38') { // up arrow
       myMove("up");
@@ -653,6 +714,10 @@ window.onload= function() {
     }
     else if (e.keyCode == '113') { // F2
       editCellStart();
+      e.preventDefault();
+    }
+    else if (e.keyCode == '191' && e.ctrlKey) { // Ctrl + /
+      myToggleCurrentlySelectedNode();
       e.preventDefault();
     }
     else {
