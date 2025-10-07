@@ -43,13 +43,15 @@
       if (canvas.getContext(c)) { return c; }
     });
   
-    alert('available contexts: ' + availableContexts);
+    //alert('available contexts: ' + availableContexts);
   
     const canvas = document.getElementById('fullscreenCanvas');
     const ctx = canvas.getContext('2d');
     
     // Example drawing
     function draw() {
+
+
       ctx.save();
       ctx.fillStyle = 'skyblue';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -63,6 +65,13 @@
       //ctx.closePath();
       //ctx.stroke();
       ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+      ctx.restore();
+
+      // text
+      ctx.save();
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = '#000';
+      ctx.fillText("v0.1", 8, 18);
       ctx.restore();
       
       // circle
@@ -90,7 +99,7 @@
     function resizeCanvas() {
       //alert('aserser');
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.height = window.innerHeight+50;
 
       draw();
     }
