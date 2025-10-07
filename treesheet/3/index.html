@@ -37,6 +37,14 @@
   <canvas id="fullscreenCanvas"></canvas>
   <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
   <script>
+    var possibleContexts = ['bitmaprenderer', '2d', 'webgl', 'webgl2', 'experimental-webgl', 'experimental-webgl2', 'dummy'];
+    var availableContexts = possibleContexts.filter(function(c) {
+      var canvas = document.createElement('canvas');
+      if (canvas.getContext(c)) { return c; }
+    });
+  
+    alert('available contexts: ' + availableContexts);
+  
     const canvas = document.getElementById('fullscreenCanvas');
     const ctx = canvas.getContext('2d');
     
