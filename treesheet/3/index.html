@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  
+  <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
+  <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Test Note App</title>
+  <!--link rel="stylesheet" href="styles.css"-->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+    .editable-box {
+      position: absolute;
+      border: 1px solid #888;
+      padding: 4px;
+      font-size: 16px;
+      background: #fafafa;
+      min-width: 100px;
+      min-height: 24px;
+      resize: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fullscreenCanvas"></canvas>
+  <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
+  <script>
+    const canvas = document.getElementById('fullscreenCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Example drawing
+    function draw() {
+      ctx.save();
+      ctx.fillStyle = 'skyblue';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // line
+      ctx.strokeStyle = "grey";//"#0077cc";
+      ctx.lineWidth = 0.5;
+      //ctx.beginPath();
+      //ctx.moveTo(100, 100);
+      //ctx.lineTo(400, 200);
+      //ctx.closePath();
+      //ctx.stroke();
+      ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+      ctx.restore();
+      
+      // circle
+      ctx.save();
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(70, 100, 30, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = "red";
+      ctx.beginPath();
+      ctx.arc(140, 100, 30, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function resizeCanvas() {
+      //alert('aserser');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      draw();
+    }
+    
+    function showEditableBox() {
+      const editableBox = document.getElementById('editableBox');
+      editableBox.style.display = 'block';
+      editableBox.style.left = '20px';
+      editableBox.style.top = '200px';
+      editableBox.style.width = '200px';
+      editableBox.style.height = '30px';
+      editableBox.value = "Simple text here";
+    }
+    
+    function hideEditableBox() {
+      const editableBox = document.getElementById('editableBox');
+      editableBox.style.display = 'none';
+    }
+    
+    function onCanvasMouseDown(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      //alert('x: ' + mx + ', y: ' + my);
+      {
+        const r = 30;
+        const dx1 = mx - 70;
+        const dy = my - 100;
+        if (dx1*dx1 + dy*dy <= r*r) {
+          // clicked on left circle (green)
+          showEditableBox();
+        }
+
+        const dx2 = mx - 140;
+        if (dx2*dx2 + dy*dy <= r*r) {
+          // clicked on right circle (red)
+          hideEditableBox();
+        }
+      }
+    }
+    
+    function onCanvasTouchStart(e) {
+      const touch = e.touches[0];
+      onCanvasMouseDown(touch);
+    }
+    
+    canvas.addEventListener('mousedown', onCanvasMouseDown);
+    canvas.addEventListener('touchstart', onCanvasTouchStart);
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+  </script>
+  <!--script type="text/javascript" src="main.js"></script-->
+  <script type="text/javascript" src="render.js"></script>
+</body>
+</html>

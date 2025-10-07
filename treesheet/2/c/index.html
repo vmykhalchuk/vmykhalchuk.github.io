@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!--https://www.npmjs.com/package/@hint/hint-meta-viewport-->
+    <title>Test Note App</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+    </style>
+</head>
+<body>
+<div class="container">
+  <!--div class="sidebar">
+    <canvas id="sidebarCanvas" width="100" height="700"></canvas>
+  </div-->
+  <div class="main-area">
+    <div class="topbar">Top Unscrollable Sample Text</div>
+    <div class="canvas-container" id="canvasContainer">
+      <canvas id="mainCanvas" width="100%" height="100%"></canvas>
+      <div id="vScrollProxy" style="position: absolute; right: 0; top: 0; bottom: 0; width: 16px; background: transparent; opacity: 0; overflow-y: scroll; z-index: 20;">
+        <div style="height: 2000px;"></div>
+      </div>
+      <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
+    </div>
+    <div class="bottombar1">Bottom Unscrollable Sample Text</div>
+    <div class="bottombar">
+      <div class="bottombar-content">
+        <button>Btn 1</button>
+        <button>Btn 2</button>
+        <button>Btn 3</button>
+        <button>Btn 4</button>
+        <button>Btn 5</button>
+        <button>Btn 6</button>
+        <button>Btn 7</button>
+        <button>Btn 8</button>
+        <button>Btn 9</button>
+        <button>Btn 10</button>
+        <button>Btn 11</button>
+        <button>Btn 12</button>
+        <button>Btn 13</button>
+        <button>Btn 14</button>
+        <button>Btn 15</button>
+        <button>Btn 16</button>
+        <button>Btn 17</button>
+        <button>Btn 18</button>
+        <button>Btn 19</button>
+        <button onclick="btn20OnClick()">Btn 20</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="render.js"></script>
+</body>
+</html>

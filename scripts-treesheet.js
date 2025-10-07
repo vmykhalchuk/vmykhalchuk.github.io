@@ -79,26 +79,6 @@ Example tree structure
 
 const debugTreeByLoadingManyNodes = false;
 
-const treeNodesList = [
-"~",
-"╠~",
-"║├",
-"║└-",
-"║ ╚",
-"╚~",
-" └"
-];
-
-const treeNodesList2 = [
-"ROOT",
-"Node A",
-"Leaf A.1",
-"Node A.2",
-"Leaf A.2.1",
-"Node B",
-"Node B.1"
-];
-
 window.ctx = {
   isMobile: false,
   x: 0,
@@ -539,8 +519,8 @@ function populateRow(row, record) {
     cell.onblur=myDataCellOnBlur;
     if (j == 0) {
       cell._type = "treeNodeConstruct";
-      cell._nodeConstructHTML = enhanceTreeScaffold(createTreeScaffold(record));//treeNodesList[recordId];
-      cell._nodeNameHTML = record.descr;//treeNodesList2[recordId];
+      cell._nodeConstructHTML = enhanceTreeScaffold(createTreeScaffold(record));
+      cell._nodeNameHTML = record.descr;
       const elSpan = document.createElement("span");
       
       elSpan.innerHTML = cell._nodeConstructHTML + cell._nodeNameHTML;
@@ -597,9 +577,6 @@ function populateRow(row, record) {
       if (j == 2) textVal = record.id;
       if (j == 3) {
         textVal = record.descr;
-        if (record.id < treeNodesList.length) {
-          textVal = treeNodesList[record.id];
-        }
         cell.style.fontFamily = "monospace";
       }
       if (j == 4) textVal = record.data ? record.data.value : "<u><i>empty</i></u>";
@@ -628,12 +605,6 @@ function initialize() {
     
   let onPageLoadedFn = function() {
     ctx.width = 5;
-    /*ctx.height = page.to - page.from;
-    for (let i = 0; i < ctx.height; i++) {
-      const record = page.records[i];
-      insertDataRow(-1, record);
-    }*/
-    
     ctx.height = 0;
     ctx.rootId = -100; // initialize rootId (load from DataSource)
     const recs = exampleData.nodes;
