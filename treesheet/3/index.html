@@ -57,6 +57,12 @@
     const canvas = document.getElementById('fullscreenCanvas');
     const ctx = canvas.getContext('2d');
     
+    const circles = [
+      {x:70,y:100,r:30,c:'green'},
+      {x:140,y:100,r:30,c:'red'},
+      {x:210,y:100,r:30,c:'yellow'}
+    ];
+    
     // Example drawing
     function draw() {
 
@@ -80,28 +86,22 @@
       ctx.save();
       ctx.font = '10px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.2", 8, 18);
+      ctx.fillText("v0.3", 8, 18);
       ctx.restore();
       
-      // circle
+      // circles
       ctx.save();
-      ctx.fillStyle = "green";
-      ctx.beginPath();
-      ctx.arc(70, 100, 30, 0, 2 * Math.PI);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.fillStyle = "red";
-      ctx.beginPath();
-      ctx.arc(140, 100, 30, 0, 2 * Math.PI);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      for (var i = 0; i < circles.length; i++) {
+        const c = circles[i];
+        ctx.fillStyle = c.c;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
       ctx.restore();
     }
 
@@ -134,18 +134,25 @@
       const my = e.clientY - rect.top;
       //alert('x: ' + mx + ', y: ' + my);
       {
-        const r = 30;
-        const dx1 = mx - 70;
-        const dy = my - 100;
-        if (dx1*dx1 + dy*dy <= r*r) {
-          // clicked on left circle (green)
-          showEditableBox();
-        }
-
-        const dx2 = mx - 140;
-        if (dx2*dx2 + dy*dy <= r*r) {
-          // clicked on right circle (red)
-          hideEditableBox();
+        for (var i = 0; i < circles.length; i++) {
+          const c = circles[i];
+          const dx = mx - c.x;
+          const dy = my - c.y;
+          if (dx*dx + dy*dy <= c.r*c.r) {
+            // handler for circle #i
+            if (i === 0) {
+              // clicked on left circle (green)
+              showEditableBox();
+            } else if (i === 1) {
+              // clicked on right circle (red)
+              hideEditableBox();
+            } else if (i === 2) {
+              navigator.clipboard.writeText("Dummy text to copy to cpbrd").then(() => {
+              }).catch(err => {
+                alert("failed to copy: " + err);
+              });
+            }
+          }
         }
       }
     }
