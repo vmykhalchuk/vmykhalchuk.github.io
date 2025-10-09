@@ -7,6 +7,13 @@
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
+  <!-- This lets it make as Android app (In Chrome browser menut, Add to Homepage, search on main screen new icon with this app) -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <!-- better alternative is: Progressive Web App
+    https://addyosmani.com/blog/getting-started-with-progressive-web-apps/
+    https://developers.google.com/web/progressive-web-apps/
+  -->
+  
   <title>Test Note App</title>
   <!--link rel="stylesheet" href="styles.css"-->
   <style>
@@ -60,7 +67,8 @@
     const circles = [
       {x:70,y:100,r:30,c:'green'},
       {x:140,y:100,r:30,c:'red'},
-      {x:210,y:100,r:30,c:'yellow'}
+      {x:210,y:100,r:30,c:'yellow'},
+      {x:280,y:100,r:30,c:'pink'}
     ];
     
     // Example drawing
@@ -86,7 +94,7 @@
       ctx.save();
       ctx.font = '10px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.3", 8, 18);
+      ctx.fillText("v0.4", 8, 18);
       ctx.restore();
       
       // circles
@@ -128,7 +136,7 @@
       editableBox.style.display = 'none';
     }
     
-    function onCanvasMouseDown(e) {
+    async function onCanvasMouseDown(e) {
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
@@ -141,16 +149,43 @@
           if (dx*dx + dy*dy <= c.r*c.r) {
             // handler for circle #i
             if (i === 0) {
-              // clicked on left circle (green)
+              // clicked on green circle
               showEditableBox();
             } else if (i === 1) {
-              // clicked on right circle (red)
+              // clicked on red circle
               hideEditableBox();
             } else if (i === 2) {
-              navigator.clipboard.writeText("Dummy text to copy to cpbrd").then(() => {
+              // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
+              const data = new Blob(["TT[778]MM[77]|This is app specific version"], { type: 'text/html' });
+              const item = new ClipboardItem({'text/html': data, 'text/plain': 'jkhlasdjkfhsdlfsdfh'});
+              /*const clipboardItemData = {
+                ["ttt/mywebnotesapp"]: "TT[778]MM[77]|This is app specific version",
+                [type]: "This is simple text version"
+              };*/
+              await navigator.clipboard.write([item]);
+              /*navigator.clipboard.writeText("Dummy text to copy to cpbrd").then(() => {
               }).catch(err => {
                 alert("failed to copy: " + err);
-              });
+              });*/
+            } else if (i === 3) {
+              const clipboardContents = await navigator.clipboard.read(['text/html']); // to prevent sanitization
+              for (const item of clipboardContents) {
+                for (const mimeType of item.types) {
+                  if (mimeType === 'text/html') {
+                    const blob = item.getType('text/html');
+                    blob.then((b) => {
+                      for (let key in b) {
+                        console.log(`${key}: ${b[key]}`);
+                      }
+                      //console.log(b.arrayBuffer());
+                      b.text().then((t) => console.log(t));
+                    });
+                    /*showEditableBox();
+                    const editableBox = document.getElementById('editableBox');
+                    editableBox.value = blob;*/
+                  }
+                }
+              }
             }
           }
         }
