@@ -1,39 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- important for mobile devices -->
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <title>My uber tool!</title>
-  <link rel="stylesheet" href="styles.css">
-  <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
-  <script type="text/javascript" src="scripts.js"></script>
-  <script type="text/javascript" src="scripts-datasource.js"></script>
-  <script type="text/javascript" src="scripts-treesheet.js"></script>
+  <meta charset="UTF-8">
+  
+  <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
+  <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#182034">
+  <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.png">
+  
+  <title>Test Note App</title>
+  <!--link rel="stylesheet" href="styles.css"-->
+  
+  <!-- This lets it make as Android app (In Chrome browser menut, Add to Homepage, search on main screen new icon with this app) -->
+  <!--meta name="mobile-web-app-capable" content="yes" -->
+  <!-- better alternative is: Progressive Web App
+    https://addyosmani.com/blog/getting-started-with-progressive-web-apps/
+    https://developers.google.com/web/progressive-web-apps/
+    examples: https://github.com/hemanth/awesome-pwa?tab=readme-ov-file
+    calculator: https://calculator-app-tau.vercel.app/ https://github.com/soransh-singh/calculatorApp-FrontendMentor/blob/main/index.html
+  -->
+
+  <!-- PWA -->
+  <link rel="manifest" href="app.webmanifest">
+
+  
+  <!--
+    body {
+      //margin: 0;
+      //padding: 0;
+      //overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+  -->
+  <style>
+    body {
+      height: 100%;
+      width: 100%;
+    }
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 0; right: 0;
+      width: 100%;
+      height: 100%;
+    }
+    dddcanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+    .editable-box {
+      position: absolute;
+      border: 1px solid #888;
+      padding: 4px;
+      font-size: 16px;
+      background: #fafafa;
+      min-width: 100px;
+      min-height: 24px;
+      resize: none;
+    }
+  </style>
 </head>
+<body>
+  <canvas id="fullscreenCanvas"></canvas>
+  <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
+  <script>
+    var possibleContexts = ['bitmaprenderer', '2d', 'webgl', 'webgl2', 'experimental-webgl', 'experimental-webgl2', 'dummy'];
+    var availableContexts = possibleContexts.filter(function(c) {
+      var canvas = document.createElement('canvas');
+      if (canvas.getContext(c)) { return c; }
+    });
+  
+    //alert('available contexts: ' + availableContexts);
+  
+    const canvas = document.getElementById('fullscreenCanvas');
+    const ctx = canvas.getContext('2d');
+    const editableBox = document.getElementById('editableBox');
+    
+    const circles = [
+      {x:70,y:100,r:30,c:'green'},
+      {x:140,y:100,r:30,c:'red'},
+      {x:210,y:100,r:30,c:'yellow'},
+      {x:280,y:100,r:30,c:'pink'}
+    ];
+    
+    var textLabel1 = "<empty>";
+    
+    // Example drawing
+    function draw() {
 
-<body style="user-select: none;">
-  <header id="header01">
-    <center>
-      <button id="expandeCollapseBtnId" onclick="onExpandCollapseButtonClick()">+-</button>
-    </center>
-  </header>
-  <main style="width:100%;" id="main01">
-    <center>
-      <table tabindex="0" id="mainTable" style="border-collapse: collapse;" cellspacing="0" cellpadding="2" border="0">
-      </table>
-    </center>
-  </main>
-  <!--footer id="footer01">
-    <center>
-      <div class="monospace"><span>E</span><span>x</span><span>m</span><span>p</span><span>l</span><span> </span><span>|</span><span>|</span><span>+</span></div><br>
-      <a href="https://www.youtube.com/watch?v=A_7MrMxG_bI">рома</a>
-      &nbsp;&nbsp;<a href="try.html">try</a>
-    </center>
-  </footer-->
 
-  <div style="position:fixed;top:0px;left:10px;" id="appVersionDiv">v0.2d.01May24</div>
+      ctx.save();
+      ctx.fillStyle = 'skyblue';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // line
+      ctx.strokeStyle = "grey";//"#0077cc";
+      ctx.lineWidth = 0.5;
+      //ctx.beginPath();
+      //ctx.moveTo(100, 100);
+      //ctx.lineTo(400, 200);
+      //ctx.closePath();
+      //ctx.stroke();
+      ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+      ctx.restore();
+
+      // text
+      ctx.save();
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = '#000';
+      ctx.fillText("v0.6", 8, 18);
+      ctx.restore();
+      
+      // circles
+      ctx.save();
+      for (var i = 0; i < circles.length; i++) {
+        const c = circles[i];
+        ctx.fillStyle = c.c;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.save();
+      ctx.font = '16px sans-serif';
+      ctx.fillStyle = '#000';
+      ctx.fillText(textLabel1, 70, canvas.height - 30);
+      ctx.restore();
+    }
+
+    function resizeCanvas() {
+      //alert('aserser');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight+50;
+
+      draw();
+    }
+    
+    function showEditableBox() {
+      //const editableBox = document.getElementById('editableBox');
+      editableBox.style.display = 'block';
+      editableBox.style.left = '20px';
+      editableBox.style.top = '200px';
+      editableBox.style.width = '200px';
+      editableBox.style.height = '30px';
+      editableBox.value = "Simple text here";
+    }
+    
+    function hideEditableBox() {
+      //const editableBox = document.getElementById('editableBox');
+      editableBox.style.display = 'none';
+    }
+    
+    async function onCanvasMouseDown(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      //alert('x: ' + mx + ', y: ' + my);
+      {
+        for (var i = 0; i < circles.length; i++) {
+          const c = circles[i];
+          const dx = mx - c.x;
+          const dy = my - c.y;
+          if (dx*dx + dy*dy <= c.r*c.r) {
+            // handler for circle #i
+            if (i === 0) {
+              // clicked on green circle
+              showEditableBox();
+            } else if (i === 1) {
+              // clicked on red circle
+              hideEditableBox();
+            } else if (i === 2) {
+              // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
+              const data = new Blob(["TT[778]MM[77]|This is app specific version" + Math.random()], { type: 'text/html' });
+              const item = new ClipboardItem({'text/html': data, 'text/plain': 'jkhlasdjkfhsdlfsdfh' + Math.random()});
+              /*const clipboardItemData = {
+                ["ttt/mywebnotesapp"]: "TT[778]MM[77]|This is app specific version",
+                [type]: "This is simple text version"
+              };*/
+              await navigator.clipboard.write([item]);
+              /*navigator.clipboard.writeText("Dummy text to copy to cpbrd").then(() => {
+              }).catch(err => {
+                alert("failed to copy: " + err);
+              });*/
+            } else if (i === 3) {
+              const clipboardContents = await navigator.clipboard.read(['text/html']); // to prevent sanitization
+              for (const item of clipboardContents) {
+                for (const mimeType of item.types) {
+                  if (mimeType === 'text/html') {
+                    const blob = item.getType('text/html');
+                    blob.then((b) => {
+                      for (let key in b) {
+                        console.log(`${key}: ${b[key]}`);
+                      }
+                      //console.log(b.arrayBuffer());
+                      b.text().then((t) => { textLabel1 = t; draw(); } );
+                    });
+                    /*showEditableBox();
+                    const editableBox = document.getElementById('editableBox');
+                    editableBox.value = blob;*/
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    function onCanvasTouchStart(e) {
+      const touch = e.touches[0];
+      onCanvasMouseDown(touch);
+    }
+    
+    canvas.addEventListener('mousedown', onCanvasMouseDown);
+    canvas.addEventListener('touchstart', onCanvasTouchStart);
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    function onEditableBoxInput() {
+      editableBox.style.height = 'auto';
+      editableBox.style.height = Math.min(editableBox.scrollHeight, 60) + 'px';
+    }
+    
+    editableBox.addEventListener('input', onEditableBoxInput);
+  </script>
+  <!--script type="text/javascript" src="main.js"></script-->
+  <script type="text/javascript" src="render.js"></script>
 </body>
 </html>

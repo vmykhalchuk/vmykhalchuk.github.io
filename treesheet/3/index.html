@@ -6,21 +6,36 @@
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
-  <!-- This lets it make as Android app (In Chrome browser menut, Add to Homepage, search on main screen new icon with this app) -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <!-- better alternative is: Progressive Web App
-    https://addyosmani.com/blog/getting-started-with-progressive-web-apps/
-    https://developers.google.com/web/progressive-web-apps/
-  -->
+  <meta name="theme-color" content="#182034">
+  <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.png">
   
   <title>Test Note App</title>
   <!--link rel="stylesheet" href="styles.css"-->
-  <style>
+  
+  <!-- This lets it make as Android app (In Chrome browser menut, Add to Homepage, search on main screen new icon with this app) -->
+  <!--meta name="mobile-web-app-capable" content="yes" -->
+  <!-- better alternative is: Progressive Web App
+    https://addyosmani.com/blog/getting-started-with-progressive-web-apps/
+    https://developers.google.com/web/progressive-web-apps/
+    examples: https://github.com/hemanth/awesome-pwa?tab=readme-ov-file
+    calculator: https://calculator-app-tau.vercel.app/ https://github.com/soransh-singh/calculatorApp-FrontendMentor/blob/main/index.html
+  -->
+
+  <!-- PWA -->
+  <link rel="manifest" href="app.webmanifest">
+
+  
+  <!--
     body {
       //margin: 0;
       //padding: 0;
       //overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+  -->
+  <style>
+    body {
       height: 100%;
       width: 100%;
     }
