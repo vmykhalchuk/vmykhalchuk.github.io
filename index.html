@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.png">
   
   <title>Test Note App</title>
-  <!--link rel="stylesheet" href="styles.css"-->
+  <!--link rel="stylesheet" href="css/styles.css"-->
   
   <!-- This lets it make as Android app (In Chrome browser menut, Add to Homepage, search on main screen new icon with this app) -->
   <!--meta name="mobile-web-app-capable" content="yes" -->
@@ -221,20 +221,31 @@
       onCanvasMouseDown(touch);
     }
     
-    canvas.addEventListener('mousedown', onCanvasMouseDown);
-    canvas.addEventListener('touchstart', onCanvasTouchStart);
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    
     function onEditableBoxInput() {
       editableBox.style.height = 'auto';
       editableBox.style.height = Math.min(editableBox.scrollHeight, 60) + 'px';
     }
     
-    editableBox.addEventListener('input', onEditableBoxInput);
+    
+    window.addEventListener("load", ()=>{
+      canvas.addEventListener('mousedown', onCanvasMouseDown);
+      canvas.addEventListener('touchstart', onCanvasTouchStart);
+
+      editableBox.addEventListener('input', onEditableBoxInput);
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("js/service-worker.js")
+          .then((registration) => console.log("Service worker registered"))
+          .catch((error) => console.log("Service worker registration failed!", error));
+      }
+    });
+    
   </script>
-  <!--script type="text/javascript" src="main.js"></script-->
-  <script type="text/javascript" src="render.js"></script>
+  <!--script type="text/javascript" src="js/main.js"></script-->
+  <script type="text/javascript" src="js/render.js"></script>
 </body>
 </html>
