@@ -71,6 +71,8 @@
       {x:280,y:100,r:30,c:'pink'}
     ];
     
+    var textLabel1 = "<empty>";
+    
     // Example drawing
     function draw() {
 
@@ -94,7 +96,7 @@
       ctx.save();
       ctx.font = '10px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.4", 8, 18);
+      ctx.fillText("v0.5", 8, 18);
       ctx.restore();
       
       // circles
@@ -110,6 +112,12 @@
         ctx.lineWidth = 1;
         ctx.stroke();
       }
+      ctx.restore();
+
+      ctx.save();
+      ctx.font = '16px sans-serif';
+      ctx.fillStyle = '#000';
+      ctx.fillText(textLabel1, 70, canvas.height - 30);
       ctx.restore();
     }
 
@@ -156,8 +164,8 @@
               hideEditableBox();
             } else if (i === 2) {
               // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
-              const data = new Blob(["TT[778]MM[77]|This is app specific version"], { type: 'text/html' });
-              const item = new ClipboardItem({'text/html': data, 'text/plain': 'jkhlasdjkfhsdlfsdfh'});
+              const data = new Blob(["TT[778]MM[77]|This is app specific version" + Math.random()], { type: 'text/html' });
+              const item = new ClipboardItem({'text/html': data, 'text/plain': 'jkhlasdjkfhsdlfsdfh' + Math.random()});
               /*const clipboardItemData = {
                 ["ttt/mywebnotesapp"]: "TT[778]MM[77]|This is app specific version",
                 [type]: "This is simple text version"
@@ -178,7 +186,7 @@
                         console.log(`${key}: ${b[key]}`);
                       }
                       //console.log(b.arrayBuffer());
-                      b.text().then((t) => console.log(t));
+                      b.text().then((t) => { textLabel1 = t; draw(); } );
                     });
                     /*showEditableBox();
                     const editableBox = document.getElementById('editableBox');
