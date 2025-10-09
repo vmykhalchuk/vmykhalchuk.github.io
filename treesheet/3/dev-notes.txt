@@ -1,0 +1,2 @@
+- Register as Share target
+  - https://developer.chrome.com/docs/capabilities/web-apis/web-share-target
