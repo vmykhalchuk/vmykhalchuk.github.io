@@ -63,6 +63,7 @@
   
     const canvas = document.getElementById('fullscreenCanvas');
     const ctx = canvas.getContext('2d');
+    const editableBox = document.getElementById('editableBox');
     
     const circles = [
       {x:70,y:100,r:30,c:'green'},
@@ -96,7 +97,7 @@
       ctx.save();
       ctx.font = '10px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.5", 8, 18);
+      ctx.fillText("v0.6", 8, 18);
       ctx.restore();
       
       // circles
@@ -130,7 +131,7 @@
     }
     
     function showEditableBox() {
-      const editableBox = document.getElementById('editableBox');
+      //const editableBox = document.getElementById('editableBox');
       editableBox.style.display = 'block';
       editableBox.style.left = '20px';
       editableBox.style.top = '200px';
@@ -140,7 +141,7 @@
     }
     
     function hideEditableBox() {
-      const editableBox = document.getElementById('editableBox');
+      //const editableBox = document.getElementById('editableBox');
       editableBox.style.display = 'none';
     }
     
@@ -210,6 +211,13 @@
 
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
+    
+    function onEditableBoxInput() {
+      editableBox.style.height = 'auto';
+      editableBox.style.height = Math.min(editableBox.scrollHeight, 60) + 'px';
+    }
+    
+    editableBox.addEventListener('input', onEditableBoxInput);
   </script>
   <!--script type="text/javascript" src="main.js"></script-->
   <script type="text/javascript" src="render.js"></script>
