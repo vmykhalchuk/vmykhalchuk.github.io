@@ -5,8 +5,8 @@
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
-  "background_color": "#aa3344",
-  "theme_color": "#3344bb",
+  "background_color": "red",
+  "theme_color": "green",
 
   "icons": [
     {
@@ -25,17 +25,17 @@
   "screenshots": [
     {
       "src": "screenshot/phone-ss-1.png",
-      "sizes": "430x982",
+      "sizes": "336x729",
       "type": "image/png"
     },
     {
       "src": "screenshot/phone-ss-2.png",
-      "sizes": "514x914",
+      "sizes": "336x729",
       "type": "image/png"
     },
     {
       "src": "screenshot/phone-ss-3.png",
-      "sizes": "514x914",
+      "sizes": "336x729",
       "type": "image/png"
     }
   ]

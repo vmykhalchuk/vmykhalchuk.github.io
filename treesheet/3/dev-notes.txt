@@ -1,2 +1,4 @@
 - Register as Share target
   - https://developer.chrome.com/docs/capabilities/web-apis/web-share-target
+- Generate icons
+  - https://romannurik.github.io/AndroidAssetStudio/

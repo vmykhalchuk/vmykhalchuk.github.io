@@ -1,7 +1,7 @@
 const filesToCache = [
   "/",
-  "js/main.js",
-  "css/master.css"//,
+  "js/main.js"//,
+  //"css/master.css",
   //"https://fonts.googleapis.com/css2?family=Spartan:wght@700&display=swap"
 ];
 
