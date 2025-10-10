@@ -2,3 +2,8 @@
   - https://developer.chrome.com/docs/capabilities/web-apis/web-share-target
 - Generate icons
   - https://romannurik.github.io/AndroidAssetStudio/
+- Make more attractive by implementing proper animations
+  - requestAnimationFrame
+    - https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
+      - https://stackoverflow.com/a/48412686 (this answer is good)
+        - run with two workers to render two frames at once

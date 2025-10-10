@@ -84,7 +84,8 @@
       {x:70,y:100,r:30,c:'green'},
       {x:140,y:100,r:30,c:'red'},
       {x:210,y:100,r:30,c:'yellow'},
-      {x:280,y:100,r:30,c:'pink'}
+      {x:280,y:100,r:30,c:'pink'},
+      {x:90,y:30,r:20,c:'black'}
     ];
     
     var textLabel1 = "<empty>";
@@ -112,7 +113,7 @@
       ctx.save();
       ctx.font = '10px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.8", 8, 18);
+      ctx.fillText("v0.9", 8, 18);
       ctx.restore();
       
       // circles
@@ -210,6 +211,8 @@
                   }
                 }
               }
+            } else if (i === 4) {
+              window.close();
             }
           }
         }
