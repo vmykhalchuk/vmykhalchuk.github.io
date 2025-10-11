@@ -7,7 +7,7 @@
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#182034">
-  <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.ico  ">
   
   <title>Test Note App</title>
   <!--link rel="stylesheet" href="css/styles.css"-->
@@ -38,6 +38,7 @@
     body {
       height: 100%;
       width: 100%;
+      margin: 0;
     }
     canvas {
       display: block;
@@ -48,6 +49,9 @@
       height: 100%;
     }
     dddcanvas {
+      width: 100%;
+      height: 100%;
+
       display: block;
       width: 100vw;
       height: 100vh;
@@ -68,6 +72,9 @@
   <canvas id="fullscreenCanvas"></canvas>
   <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
   <script>
+    const ResizeSolution = "WINDOW_RESIZER"; // WINDOW_RESIZER | RESIZE_OBSERVER
+    const multiplyFactor = 1.6;
+
     var possibleContexts = ['bitmaprenderer', '2d', 'webgl', 'webgl2', 'experimental-webgl', 'experimental-webgl2', 'dummy'];
     var availableContexts = possibleContexts.filter(function(c) {
       var canvas = document.createElement('canvas');
@@ -93,27 +100,29 @@
     // Example drawing
     function draw() {
 
-
       ctx.save();
-      ctx.fillStyle = 'skyblue';
+      ctx.fillStyle = 'white';//'skyblue';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       // line
-      ctx.strokeStyle = "grey";//"#0077cc";
+      /*ctx.strokeStyle = "grey";//"#0077cc";
       ctx.lineWidth = 0.5;
       //ctx.beginPath();
       //ctx.moveTo(100, 100);
       //ctx.lineTo(400, 200);
       //ctx.closePath();
       //ctx.stroke();
-      ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+      ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);*/
+      
       ctx.restore();
+      
+      render(canvas, ctx);
 
       // text
       ctx.save();
-      ctx.font = '10px sans-serif';
+      ctx.font = '16px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.9", 8, 18);
+      ctx.fillText("v0.9", canvas.width-108, 180);
       ctx.restore();
       
       // circles
@@ -140,8 +149,8 @@
 
     function resizeCanvas() {
       //alert('aserser');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight+50;
+      canvas.width = window.innerWidth * multiplyFactor;
+      canvas.height = window.innerHeight * multiplyFactor;//+50;
 
       draw();
     }
@@ -166,54 +175,52 @@
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
       //alert('x: ' + mx + ', y: ' + my);
-      {
-        for (var i = 0; i < circles.length; i++) {
-          const c = circles[i];
-          const dx = mx - c.x;
-          const dy = my - c.y;
-          if (dx*dx + dy*dy <= c.r*c.r) {
-            // handler for circle #i
-            if (i === 0) {
-              // clicked on green circle
-              showEditableBox();
-            } else if (i === 1) {
-              // clicked on red circle
-              hideEditableBox();
-            } else if (i === 2) {
-              // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
-              const data = new Blob(["TT[778]MM[77]|This is app specific version" + Math.random()], { type: 'text/html' });
-              const item = new ClipboardItem({'text/html': data, 'text/plain': 'jkhlasdjkfhsdlfsdfh' + Math.random()});
-              /*const clipboardItemData = {
-                ["ttt/mywebnotesapp"]: "TT[778]MM[77]|This is app specific version",
-                [type]: "This is simple text version"
-              };*/
-              await navigator.clipboard.write([item]);
-              /*navigator.clipboard.writeText("Dummy text to copy to cpbrd").then(() => {
-              }).catch(err => {
-                alert("failed to copy: " + err);
-              });*/
-            } else if (i === 3) {
-              const clipboardContents = await navigator.clipboard.read(['text/html']); // to prevent sanitization
-              for (const item of clipboardContents) {
-                for (const mimeType of item.types) {
-                  if (mimeType === 'text/html') {
-                    const blob = item.getType('text/html');
-                    blob.then((b) => {
-                      for (let key in b) {
-                        console.log(`${key}: ${b[key]}`);
-                      }
-                      //console.log(b.arrayBuffer());
-                      b.text().then((t) => { textLabel1 = t; draw(); } );
-                    });
-                    /*showEditableBox();
-                    const editableBox = document.getElementById('editableBox');
-                    editableBox.value = blob;*/
-                  }
+      for (var i = 0; i < circles.length; i++) {
+        const c = circles[i];
+        const dx = mx - c.x;
+        const dy = my - c.y;
+        if (dx*dx + dy*dy <= c.r*c.r) {
+          // handler for circle #i
+          if (i === 0) {
+            // clicked on green circle
+            showEditableBox();
+          } else if (i === 1) {
+            // clicked on red circle
+            hideEditableBox();
+          } else if (i === 2) {
+            // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
+            const data = new Blob(["TT[778]MM[77]|This is app specific version" + Math.random()], { type: 'text/html' });
+            const item = new ClipboardItem({'text/html': data, 'text/plain': 'jkhlasdjkfhsdlfsdfh' + Math.random()});
+            /*const clipboardItemData = {
+              ["ttt/mywebnotesapp"]: "TT[778]MM[77]|This is app specific version",
+              [type]: "This is simple text version"
+            };*/
+            await navigator.clipboard.write([item]);
+            /*navigator.clipboard.writeText("Dummy text to copy to cpbrd").then(() => {
+            }).catch(err => {
+              alert("failed to copy: " + err);
+            });*/
+          } else if (i === 3) {
+            const clipboardContents = await navigator.clipboard.read(['text/html']); // to prevent sanitization
+            for (const item of clipboardContents) {
+              for (const mimeType of item.types) {
+                if (mimeType === 'text/html') {
+                  const blob = item.getType('text/html');
+                  blob.then((b) => {
+                    for (let key in b) {
+                      console.log(`${key}: ${b[key]}`);
+                    }
+                    //console.log(b.arrayBuffer());
+                    b.text().then((t) => { textLabel1 = t; draw(); } );
+                  });
+                  /*showEditableBox();
+                  const editableBox = document.getElementById('editableBox');
+                  editableBox.value = blob;*/
                 }
               }
-            } else if (i === 4) {
-              window.close();
             }
+          } else if (i === 4) {
+            window.close();
           }
         }
       }
@@ -236,8 +243,21 @@
 
       editableBox.addEventListener('input', onEditableBoxInput);
 
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
+      if (ResizeSolution === "WINDOW_RESIZER") {
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+      } else if (ResizeSolution === "RESIZE_OBSERVER") {
+        const observer = new ResizeObserver((entries) => {
+          const entry = entries.find((entry) => entry.target === canvas);
+          canvas.width = entry.devicePixelContentBoxSize[0].inlineSize * 2;
+          canvas.height = entry.devicePixelContentBoxSize[0].blockSize * 2;
+          /* … render to canvas … */
+          draw();
+        });
+        observer.observe(canvas, {box: ['device-pixel-content-box']});
+      }
+
+
       
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker
@@ -245,6 +265,7 @@
           .then((registration) => console.log("Service worker registered"))
           .catch((error) => console.log("Service worker registration failed!", error));
       }
+      
     });
     
   </script>
