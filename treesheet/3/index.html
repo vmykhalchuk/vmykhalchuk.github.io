@@ -73,7 +73,7 @@
   <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
   <script>
     const ResizeSolution = "WINDOW_RESIZER"; // WINDOW_RESIZER | RESIZE_OBSERVER
-    const multiplyFactor = 1.6;
+    const multiplyFactor = 2;
 
     var possibleContexts = ['bitmaprenderer', '2d', 'webgl', 'webgl2', 'experimental-webgl', 'experimental-webgl2', 'dummy'];
     var availableContexts = possibleContexts.filter(function(c) {
@@ -149,8 +149,22 @@
 
     function resizeCanvas() {
       //alert('aserser');
-      canvas.width = window.innerWidth * multiplyFactor;
-      canvas.height = window.innerHeight * multiplyFactor;//+50;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      // Get the device pixel ratio, falling back to 1.
+      var dpr = window.devicePixelRatio || 5;
+      // Get the size of the canvas in CSS pixels.
+      var rect = canvas.getBoundingClientRect();
+      // Give the canvas pixel dimensions of their CSS
+      // size * the device pixel ratio.
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      var ctx = canvas.getContext('2d');
+      // Scale all drawing operations by the dpr, so you
+      // don't have to worry about the difference.
+      ctx.scale(dpr, dpr);
+
 
       draw();
     }

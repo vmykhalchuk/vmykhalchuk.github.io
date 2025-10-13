@@ -96,6 +96,9 @@ function getColumnWidth(colNo) {
 
 function renderVerticalLines(canvas, ctx, width, height) {
   ctx.save();
+  ctx.webkitImageSmoothingEnabled = false;
+  ctx.mozImageSmoothingEnabled = false;
+  ctx.imageSmoothingEnabled = false;
   
   ctx.strokeStyle = skin.gridLineStyle;
   ctx.lineWidth = skin.gridLineWidth;

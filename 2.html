@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Note App</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      /* set to red we can see the gap */
+      /* set to some other color to hide the gap */
+      background: red; 
+    }
+
+    canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+  </style>
+</head>
+<body>
+  <canvas></canvas>
+  <script>
+    const px = v => `${v}px`;
+
+    const canvas = document.querySelector('canvas');
+    resizeCanvas(canvas);
+    draw(canvas);
+
+    window.addEventListener('resize', () => {
+      resizeCanvas(canvas);
+      draw(canvas);
+    });
+
+    function resizeCanvas(canvas) {
+      // how many devicePixels per pixel in the canvas we want
+      // you can set this to 1 if you always want 1 device pixel to 1 canvas pixel
+      const pixelSize = Math.max(1, devicePixelRatio) | 0;  
+      
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const deviceWidth  = rect.width * devicePixelRatio | 0;
+      const deviceHeight = rect.height * devicePixelRatio | 0;
+      const pixelsAcross = deviceWidth / pixelSize | 0;
+      const pixelsDown   = deviceHeight / pixelSize | 0;
+      const devicePixelsAcross = pixelsAcross * pixelSize;
+      const devicePixelsDown   = pixelsDown   * pixelSize;
+      canvas.style.width = px(devicePixelsAcross / devicePixelRatio);
+      canvas.style.height = px(devicePixelsDown / devicePixelRatio);
+      canvas.width = pixelsAcross;
+      canvas.height = pixelsDown;
+    }
+
+    function draw(canvas) {
+      const ctx = canvas.getContext('2d');
+      for (let x = 0; x < canvas.width; ++x) {
+        let h = x % (canvas.height * 2);
+        if (h > canvas.height) {
+          h = 2 * canvas.height - h;
+        }
+        ctx.fillStyle = 'lightblue';
+        ctx.fillRect(x, 0, 1, h);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(x, h, 1, 1);
+        ctx.fillStyle = 'pink';
+        ctx.fillRect(x, h + 1, 1, canvas.height - h);
+      }
+    }
+
+  </script>
+</body>
+</html>
