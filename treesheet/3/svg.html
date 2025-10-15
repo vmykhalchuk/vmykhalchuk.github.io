@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SVG Grid</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+    }
+    #grid-svg {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <svg id="grid-svg" shape-rendering="crispEdges"></svg>
+  <script>
+    function drawGrid() {
+      const svg = document.getElementById('grid-svg');
+      const dpr = window.devicePixelRation || 1;
+      const width = Math.round(window.innerWidth * dpr);
+      const height = Math.round(window.innerHeight * dpr);
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.innerHTML = '';
+      
+      // Draw vertical lines
+      for (let x = 0; x <= width; x += 20) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x);
+        line.setAttribute('y1', 0);
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', height);
+        line.setAttribute('stroke', '#000');
+        line.setAttribute('stroke-width', '1');
+        svg.appendChild(line);
+      }
+      
+      // Draw horizontal lines
+      for (let y = 0; y <= height; y += 20) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', 0);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', width);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#000');
+        line.setAttribute('stroke-width', '1');
+        svg.appendChild(line);
+      }
+      
+      // Add text label
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', 50);
+      text.setAttribute('y', 50);
+      text.setAttribute('fill', 'red');
+      text.setAttribute('font-size', '24');
+      text.textContent = 'Some label!';
+      svg.appendChild(text);
+    }
+    
+    window.addEventListener('resize', drawGrid);
+    window.addEventListener('DOMContentLoaded', drawGrid);
+  </script>
+</body>
+</html>
