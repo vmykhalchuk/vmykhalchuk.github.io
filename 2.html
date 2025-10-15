@@ -16,8 +16,8 @@
 
     canvas {
       display: block;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
+      /*image-rendering: pixelated;*/
+      /*image-rendering: crisp-edges;*/
     }
   </style>
 </head>
@@ -38,7 +38,8 @@
     function resizeCanvas(canvas) {
       // how many devicePixels per pixel in the canvas we want
       // you can set this to 1 if you always want 1 device pixel to 1 canvas pixel
-      const pixelSize = Math.max(1, devicePixelRatio) | 0;  
+      const pixelSize = Math.max(1, devicePixelRatio) | 0;
+      console.log(`devicePixelRatio: ${devicePixelRatio}`);
       
       const rect = canvas.parentElement.getBoundingClientRect();
       const deviceWidth  = rect.width * devicePixelRatio | 0;
@@ -67,7 +68,28 @@
         ctx.fillStyle = 'pink';
         ctx.fillRect(x, h + 1, 1, canvas.height - h);
       }
+      for (let x = 0; x < canvas.width; x+=20) {
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      // text
+      ctx.save();
+      ctx.font = '16px sans-serif';
+      ctx.fillStyle = '#000';
+      ctx.fillText("what are we gonna do!", canvas.width-208, 180);
+      ctx.restore();
     }
+    
+    function onTouchMove(e) {
+      e.preventDefault();
+    }
+    
+    canvas.addEventListener('touchmove', onTouchMove, {passive: false});
 
   </script>
 </body>
