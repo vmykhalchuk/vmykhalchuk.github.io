@@ -96,6 +96,11 @@
     
     var textLabel1 = "<empty>";
     
+    var isScrolling = false;
+    var scrollLeft=0, scrollTop=0;
+    var touchStartX=0, touchStartY=0;
+    var scrollLeftStart=0, scrollTopStart=0;
+    
     // Example drawing
     function draw() {
 
@@ -115,13 +120,13 @@
       
       ctx.restore();
       
-      render(canvas, ctx);
+      render(canvas, ctx, scrollLeft, scrollTop);
 
       // text
       ctx.save();
       ctx.font = '16px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.10", canvas.width-108, 180);
+      ctx.fillText("v0.11", canvas.width-108, 180);
       ctx.fillText(`dpx:${devicePixelRatio}`, canvas.width-108, 195);
       ctx.restore();
       
@@ -188,11 +193,13 @@
       const mx = e.clientX*devicePixelRatio - rect.left;
       const my = e.clientY*devicePixelRatio - rect.top;
       //alert('x: ' + mx + ', y: ' + my);
+      let circleClicked = false;
       for (var i = 0; i < circles.length; i++) {
         const c = circles[i];
         const dx = mx - c.x;
         const dy = my - c.y;
         if (dx*dx + dy*dy <= c.r*c.r) {
+          circleClicked = true;
           // handler for circle #i
           if (i === 0) {
             // clicked on green circle
@@ -237,11 +244,39 @@
           }
         }
       }
+      if (!circleClicked) {
+        // start scrolling
+        isScrolling = true;
+        touchStartX = mx; touchStartY = my;
+        scrollLeftStart = scrollLeft; scrollTopStart = scrollTop;
+      }
     }
     
     function onCanvasTouchStart(e) {
       const touch = e.touches[0];
       onCanvasMouseDown(touch);
+    }
+    
+    function onCanvasTouchMove(e) {
+      if (isScrolling) {
+        e.preventDefault();
+        const touch = e.touches[0];
+
+        const rect = canvas.getBoundingClientRect();
+        const mx = touch.clientX*devicePixelRatio - rect.left;
+        const my = touch.clientY*devicePixelRatio - rect.top;
+
+        scrollLeft = scrollLeftStart + touchStartX - mx;
+        scrollTop = scrollTopStart + touchStartY - my;
+        console.log(`mx: ${mx}`);
+        draw();
+      }
+    }
+
+    function onCanvasTouchEnd(e) {
+      if (isScrolling) {
+        isScrolling = false;
+      }
     }
     
     function onEditableBoxInput() {
@@ -252,7 +287,9 @@
     
     window.addEventListener("load", ()=>{
       canvas.addEventListener('mousedown', onCanvasMouseDown);
-      canvas.addEventListener('touchstart', onCanvasTouchStart);
+      canvas.addEventListener('touchstart', onCanvasTouchStart, {passive: false});
+      canvas.addEventListener('touchmove', onCanvasTouchMove, {passive: false});
+      canvas.addEventListener('touchend', onCanvasTouchEnd, {passive: false});
 
       editableBox.addEventListener('input', onEditableBoxInput);
 

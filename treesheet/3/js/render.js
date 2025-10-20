@@ -75,13 +75,13 @@ const dataRowsRenderData = [
   }}
 ];
 
-function render(canvas, ctx) {
+function render(canvas, ctx, scrollLeft, scrollTop) {
   // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale
   const width = canvas.width;
   const height = canvas.height;
   renderHeaderWithoutVerticalLines(canvas, ctx, width, height);
   renderRowsWithoutVerticalLines(canvas, ctx);
-  renderVerticalLines(canvas, ctx, width, height);
+  renderVerticalLines(canvas, ctx, width, height, scrollLeft, scrollTop);
 }
 
 function getColumnName(colNo) {
@@ -94,7 +94,7 @@ function getColumnWidth(colNo) {
   return colWidth ? colWidth : metaInfo.defaultColumnWidth;
 }
 
-function renderVerticalLines(canvas, ctx, width, height) {
+function renderVerticalLines(canvas, ctx, width, height, scrollLeft, scrollTop) {
   ctx.save();
   ctx.webkitImageSmoothingEnabled = false;
   ctx.mozImageSmoothingEnabled = false;
@@ -107,16 +107,16 @@ function renderVerticalLines(canvas, ctx, width, height) {
   for (var i = 0; i < 5; i++) {
     const w = getColumnWidth(i);
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x,height);
+    ctx.moveTo(x-scrollLeft, 0);
+    ctx.lineTo(x-scrollLeft,height);
     ctx.stroke();
     
     x+= w+1;
   }
   
   ctx.beginPath();
-  ctx.moveTo(x, 0);
-  ctx.lineTo(x,height);
+  ctx.moveTo(x-scrollLeft, 0);
+  ctx.lineTo(x-scrollLeft,height);
   ctx.stroke();
   
   ctx.restore();
