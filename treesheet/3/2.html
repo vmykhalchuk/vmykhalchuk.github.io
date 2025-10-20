@@ -39,6 +39,7 @@
       // how many devicePixels per pixel in the canvas we want
       // you can set this to 1 if you always want 1 device pixel to 1 canvas pixel
       const pixelSize = Math.max(1, devicePixelRatio) | 0;
+      console.log(`pixelSize: ${pixelSize}`);
       console.log(`devicePixelRatio: ${devicePixelRatio}`);
       
       const rect = canvas.parentElement.getBoundingClientRect();
@@ -49,8 +50,10 @@
       const devicePixelsAcross = pixelsAcross * pixelSize;
       const devicePixelsDown   = pixelsDown   * pixelSize;
       canvas.style.width = px(devicePixelsAcross / devicePixelRatio);
+      console.log(`canvas.style.width: ${canvas.style.width}`);
       canvas.style.height = px(devicePixelsDown / devicePixelRatio);
       canvas.width = pixelsAcross;
+      console.log(`canvas.width: ${canvas.width}`);
       canvas.height = pixelsDown;
     }
 
