@@ -11,8 +11,8 @@ var pwaUtil = {
         if (req) {
           req.showNotification('Hello from PWA!', {
             body: 'This is a notification with a picture.',
-            icon: '/images/icon_128.png', // Small icon
-            image: '/images/test_512x256.png', // Large image
+            //icon: '/images/icon_128.png', // Small icon
+            //image: '/images/test_512x256.png', // Large image
             tag: 'picture-notification'
           });
         }
