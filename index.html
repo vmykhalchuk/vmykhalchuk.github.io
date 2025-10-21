@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <meta name="treesheet-app-version" content="v0.13">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
@@ -76,6 +78,9 @@
   <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
   <script type="text/javascript" src="js/pwa.js"></script>
   <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('js/service-worker.js');
+    }
     pwaUtil.requestNotificationPermission();
   
     const ResizeSolution = "WINDOW_RESIZER"; // WINDOW_RESIZER | RESIZE_OBSERVER
@@ -98,7 +103,7 @@
       {x:210,y:100,r:30,c:'yellow'},
       {x:280,y:100,r:30,c:'pink'},
       {x:90,y:30,r:20,c:'black'},
-      {x:140,y:150,r:30,c:'blue'}
+      {x:140,y:180,r:30,c:'blue'}
     ];
     
     var textLabel1 = "<empty>";
@@ -133,7 +138,8 @@
       ctx.save();
       ctx.font = '16px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText("v0.12", canvas.width-108, 180);
+      const treesheetAppVersion = document.querySelector('meta[name="treesheet-app-version"]').content;
+      ctx.fillText(treesheetAppVersion, canvas.width-108, 180);
       ctx.fillText(`dpx:${devicePixelRatio}`, canvas.width-108, 195);
       ctx.restore();
       
