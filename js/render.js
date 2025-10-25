@@ -109,16 +109,16 @@ const renderer = {
     for (var i = 0; i < 5; i++) {
       const w = this.util.getColumnWidth(i);
       ctx.beginPath();
-      ctx.moveTo(x-scrollLeft, 0);
-      ctx.lineTo(x-scrollLeft,this.height);
+      ctx.moveTo(x-this.scrollLeft, 0);
+      ctx.lineTo(x-this.scrollLeft,this.height);
       ctx.stroke();
       
       x+= w+1;
     }
     
     ctx.beginPath();
-    ctx.moveTo(x-scrollLeft, 0);
-    ctx.lineTo(x-scrollLeft,this.height);
+    ctx.moveTo(x-this.scrollLeft, 0);
+    ctx.lineTo(x-this.scrollLeft,this.height);
     ctx.stroke();
     
     ctx.restore();
@@ -129,9 +129,12 @@ const renderer = {
     const bottom = editorInfo.headerRowHeight;
     ctx.save();
     
+    ctx.fillStyle = "#f0ffff";
+    ctx.fillRect(0, 0, this.width, bottom);
+    
     ctx.strokeStyle = skin.gridLineStyle;
     ctx.lineWidth = skin.gridLineWidth;
-    ctx.strokeRect(0, 0, this.width, this.bottom);
+    ctx.strokeRect(0, 0, this.width, bottom);
 
     ctx.font = editorInfo.headerFont;
     ctx.fillStyle = editorInfo.headerFontStyle;
