@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta name="treesheet-app-version" content="v0.16">
+  <meta name="treesheet-app-version" content="v0.17">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
@@ -112,6 +112,9 @@
     var scrollLeft=0, scrollTop=0;
     var touchStartX=0, touchStartY=0;
     var scrollLeftStart=0, scrollTopStart=0;
+    
+    var isMultiTouchResizing = false;
+    var multiTouchResizingStartDistance = 0;
     
     // Example drawing
     function draw() {
@@ -268,12 +271,25 @@
     }
     
     function onCanvasTouchStart(e) {
-      const touch = e.touches[0];
-      onCanvasMouseDown(touch);
+      const tc = e.touches.length;
+      if (tc === 1) {
+        const touch = e.touches[0];
+        onCanvasMouseDown(touch);
+      } else if (tc === 2) {
+        isMultiTouchResizing = true;
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const deltaX = Math.abs(touch2.clientX - touch1.clientX);
+        const deltaY = Math.abs(touch2.clientY - touch1.clientY);
+        multiTouchResizingStartDistance = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+        textLabel1 = "resizing: " + multiTouchResizingStartDistance;
+        draw();
+      }
     }
     
     function onCanvasTouchMove(e) {
-      if (isScrolling) {
+      const tc = e.touches.length;
+      if (isScrolling && tc === 1) {
         e.preventDefault();
         const touch = e.touches[0];
 
@@ -285,12 +301,24 @@
         scrollTop = scrollTopStart + touchStartY - my;
         console.log(`mx: ${mx}`);
         draw();
+      } else if (isMultiTouchResizing && tc === 2) {
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const deltaX = Math.abs(touch2.clientX - touch1.clientX);
+        const deltaY = Math.abs(touch2.clientY - touch1.clientY);
+        const deltaDistance = Math.sqrt(deltaX*deltaX + deltaY*deltaY) - multiTouchResizingStartDistance;
+        textLabel1 = "resizing: " + multiTouchResizingStartDistance + "; delta: " + deltaDistance;
+        draw();
       }
     }
 
     function onCanvasTouchEnd(e) {
       if (isScrolling) {
         isScrolling = false;
+      } else if (isMultiTouchResizing) {
+        isMultiTouchResizing = false;
+        textLabel1 = "";
+        draw();
       }
     }
     
