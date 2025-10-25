@@ -1,3 +1,5 @@
+- Change bg color as in "НІТ"
+- Make sure notifications work as in "НІТ"
 - Register as Share target
   - https://developer.chrome.com/docs/capabilities/web-apis/web-share-target
 - Generate icons

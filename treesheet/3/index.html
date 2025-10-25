@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta name="treesheet-app-version" content="v0.15">
+  <meta name="treesheet-app-version" content="v0.16">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
@@ -132,7 +132,7 @@
       
       ctx.restore();
       
-      render(canvas, ctx, scrollLeft, scrollTop);
+      renderer.render(canvas, ctx, scrollLeft, scrollTop);
 
       // text
       ctx.save();
