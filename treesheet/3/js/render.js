@@ -1,7 +1,14 @@
 const skins = [
   {
     gridLineStyle: 'black',//'#d3d3d3',
-    gridLineWidth: 1
+    gridLineWidth: 1,
+    headerBgColor: '#f5f5f5',
+    headerSelectedBgColor: '#e0ffff', // when certain row/column belongs to selected area (cursor location is treated as one cell selection area)
+    headerFullRowColSelectedBgColor: '#a0ffff', // when certain row/column is fully selected (by clicking on header)
+    cursorRectangleColor: '#ffaaaa',
+    cursorRectangleLineWidth: 2,
+    selectionRectangleColor: '#ffaaaa',
+    selectionRectangleLineWidth: 1,
   }
 ];
 let skin = skins[0];
@@ -18,8 +25,21 @@ let metaInfo = {
   backgroundColor: 'white',
   defaultColumnWidth: 60,
   defaultRowHeight: 17,
-  rowsCount: 3,
-  columnsCount: 5 // [A..E]
+  rowsCount: 30,
+  columnsCount: 5, // [A..E]
+  
+  cursorRow: 0,
+  cursorCol: 0,
+  
+  selectionRowStart: 0,
+  selectionRowsCount: 0,
+  selectionColStart: 0,
+  selectionColsCount: 0,
+  
+  fullRowSelectionStart: 0,
+  fullRowSelectionCount: 0,
+  fullColSelectionStart: 0,
+  fullColSelectionCount: 0,
 }
 
 let columnsMetaInfo = [
@@ -93,7 +113,7 @@ const renderer = {
   util: rendererUtil,
   
   canvas:null, ctx:null,
-  width:0, height:0, scrollLeft:0, scrollTop:0,
+  width:null, height:null, scrollLeft:null, scrollTop:null,
   
   renderVerticalLines: function() {
     const ctx = this.ctx;
@@ -109,44 +129,70 @@ const renderer = {
     for (var i = 0; i < 5; i++) {
       const w = this.util.getColumnWidth(i);
       ctx.beginPath();
-      ctx.moveTo(x-this.scrollLeft, 0);
-      ctx.lineTo(x-this.scrollLeft,this.height);
+      ctx.moveTo(x-this.scrollLeft+0.5, 0.5);
+      ctx.lineTo(x-this.scrollLeft+0.5,this.height+0.5);
       ctx.stroke();
       
       x+= w+1;
     }
     
     ctx.beginPath();
-    ctx.moveTo(x-this.scrollLeft, 0);
-    ctx.lineTo(x-this.scrollLeft,this.height);
+    ctx.moveTo(x-this.scrollLeft+0.5, 0.5);
+    ctx.lineTo(x-this.scrollLeft+0.5,this.height+0.5);
     ctx.stroke();
     
     ctx.restore();
   },
 
   renderHeaderWithoutVerticalLines: function() {
-    const ctx = this.ctx;
-    const bottom = editorInfo.headerRowHeight;
+    const { ctx, width, height, scrollLeft, scrollTop } = this; // destructuring
+    const { getColumnName, getColumnWidth } = this.util;
+    const hHeight = editorInfo.headerRowHeight;
     ctx.save();
     
-    ctx.fillStyle = "#f0ffff";
-    ctx.fillRect(0, 0, this.width, bottom);
+    ctx.fillStyle = skin.headerBgColor;
+    ctx.fillRect(0.5, 0.5, width, hHeight);
     
-    ctx.strokeStyle = skin.gridLineStyle;
-    ctx.lineWidth = skin.gridLineWidth;
-    ctx.strokeRect(0, 0, this.width, bottom);
-
     ctx.font = editorInfo.headerFont;
     ctx.fillStyle = editorInfo.headerFontStyle;
+    
+    // Note: there is one pixel margin between columns
     var x = 0;
     for (var i = 0; i < 5; i++) {
-      const colTitle = this.util.getColumnName(i);
+      const colTitle = getColumnName(i);
+      const {selectionColStart, selectionColsCount, fullColSelectionStart, fullColSelectionCount} = metaInfo;
+      const colSelectedF = (col) => {
+        if (selectionColsCount > 0) {
+          return (col >= selectionColStart && col < (selectionColStart+selectionColsCount));
+        }
+        return false;
+      };
+      const colFullySelectedF = (col) => {
+        if (fullColSelectionCount > 0) {
+          return (col >= fullColSelectionStart && col < (fullColSelectionStart+fullColSelectionCount));
+        }
+        return false;
+      };
+      const colSelected = colSelectedF(i);
+      const colFullySelected = colFullySelectedF(i);
+      const w = getColumnWidth(i);
+
+      // draw header bg rectangle (if selected || fullColSelected)
+      if (colSelected || colFullySelected) {
+        if (colFullySelected) {
+          ctx.fillStyle = skin.headerFullRowColSelectedBgColor;
+        } else {
+          ctx.fillStyle = skin.headerSelectedBgColor;
+        }
+        ctx.fillRect(x+1+0.5, 0.5, w, hHeight);
+      }
+
+      // draw text
       const m = ctx.measureText(colTitle);
       const above = m.fontBoundingBoxAscent;
       const below = m['fontBoundingBoxDescent'];
       //console.log(`above: ${above}, below:${below}`);
-      const height = above+below;
-      const w = this.util.getColumnWidth(i);
+      const h = above+below;
       var dx;
       if (m.width > w) { // clipping will be needed here
         dx = 0;
@@ -154,15 +200,20 @@ const renderer = {
         dx = (w - m.width) / 2;
       }
       var dy;
-      if (height > (bottom-2)) {
+      if (h > (hHeight-2)) {
         dy = 0;
       } else {
-        dy = (bottom-2-height) / 2
+        dy = (hHeight-2-h) / 2;
       }
-      ctx.fillText(colTitle, x+dx-this.scrollLeft, bottom - dy - below-this.scrollTop);
+      ctx.fillStyle = editorInfo.headerFontStyle;
+      ctx.fillText(colTitle, x+dx-scrollLeft+0.5, hHeight-dy-below-scrollTop+0.5);
       x += w+1;
     }
     
+    ctx.strokeStyle = skin.gridLineStyle;
+    ctx.lineWidth = skin.gridLineWidth;
+    ctx.strokeRect(0.5, 0.5, width, hHeight);
+
     ctx.restore();
   },
 
