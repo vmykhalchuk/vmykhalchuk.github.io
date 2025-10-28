@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta name="treesheet-app-version" content="v0.21">
+  <meta name="treesheet-app-version" content="v0.22">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
@@ -313,6 +313,7 @@
     }
 
     function onCanvasTouchEnd(e) {
+      alert('touchend');
       if (isScrolling) {
         isScrolling = false;
       } else if (isMultiTouchResizing) {
@@ -323,7 +324,13 @@
     }
 
     function onCanvasTouchCancel(e) {
-      onCanvasTouchEnd(e);
+      if (isScrolling) {
+        isScrolling = false;
+      } else if (isMultiTouchResizing) {
+        isMultiTouchResizing = false;
+        textLabel1 = "";
+        draw();
+      }
       alert('cancelled');
     }
 
