@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta name="treesheet-app-version" content="v0.20">
+  <meta name="treesheet-app-version" content="v0.21">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
@@ -299,7 +299,7 @@
 
         scrollLeft = scrollLeftStart + touchStartX - mx;
         scrollTop = scrollTopStart + touchStartY - my;
-        console.log(`mx: ${mx}`);
+        //console.log(`mx: ${mx}`);
         draw();
       } else if (isMultiTouchResizing && tc === 2) {
         const touch1 = e.touches[0];
@@ -324,6 +324,7 @@
 
     function onCanvasTouchCancel(e) {
       onCanvasTouchEnd(e);
+      alert('cancelled');
     }
 
     
