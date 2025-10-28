@@ -218,10 +218,24 @@ const renderer = {
   },
 
   renderRowsWithoutVerticalLines: function() {
-    const ctx = this.ctx;
+    const { ctx, width, height, scrollLeft, scrollTop } = this; // destructuring
+    const { getColumnName, getColumnWidth } = this.util;
+
+    ctx.font = editorInfo.headerFont;
+    ctx.fillStyle = editorInfo.headerFontStyle;
+    ctx.strokeStyle = skin.gridLineStyle;
+    ctx.lineWidth = skin.gridLineWidth;
+
     // render in order: top->bottom then right to left
     for (var rowI = 0; rowI < dataRows.size; rowI++) {
       
+    }
+    
+    for (var i = 0; i < 100; i++) {
+      let y = 50+i*20-scrollTop;
+      ctx.fillText("Hgadasioumbkmasfgkjhtyuljkahsd    asgkfjhsdgfk j  hasgkfjhsgdjk  asfhgk", 
+            20-scrollLeft+0.5, y+16+0.5);
+      ctx.beginPath(); ctx.moveTo(0.5,y+20+0.5); ctx.lineTo(width+0.5,y+20+0.5); ctx.stroke();
     }
   },
   
