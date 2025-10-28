@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta name="treesheet-app-version" content="v0.19">
+  <meta name="treesheet-app-version" content="v0.20">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
@@ -321,6 +321,11 @@
         draw();
       }
     }
+
+    function onCanvasTouchCancel(e) {
+      onCanvasTouchEnd(e);
+    }
+
     
     function onEditableBoxInput() {
       editableBox.style.height = 'auto';
@@ -333,6 +338,7 @@
       canvas.addEventListener('touchstart', onCanvasTouchStart, {passive: false});
       canvas.addEventListener('touchmove', onCanvasTouchMove, {passive: false});
       canvas.addEventListener('touchend', onCanvasTouchEnd, {passive: false});
+      canvas.addEventListener('touchcancel', onCanvasTouchCancel, {passive: false});
 
       editableBox.addEventListener('input', onEditableBoxInput);
 
