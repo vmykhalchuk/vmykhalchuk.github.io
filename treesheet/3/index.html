@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta name="treesheet-app-version" content="v0.22">
+  <meta name="treesheet-app-version" content="v0.23-zoom">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#182034">
-  <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.ico  ">
+  <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.ico">
   
   <title>Test Note App</title>
   <!--link rel="stylesheet" href="css/styles.css"-->
@@ -115,6 +115,7 @@
     
     var isMultiTouchResizing = false;
     var multiTouchResizingStartDistance = 0;
+    var multiTouchResizingStartZoomScale = 1;
     
     // Example drawing
     function draw() {
@@ -282,6 +283,7 @@
         const deltaX = Math.abs(touch2.clientX - touch1.clientX);
         const deltaY = Math.abs(touch2.clientY - touch1.clientY);
         multiTouchResizingStartDistance = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+        multiTouchResizingStartZoomScale = editorInfo.zoomScale;
         textLabel1 = "resizing: " + multiTouchResizingStartDistance;
         draw();
       }
@@ -306,8 +308,11 @@
         const touch2 = e.touches[1];
         const deltaX = Math.abs(touch2.clientX - touch1.clientX);
         const deltaY = Math.abs(touch2.clientY - touch1.clientY);
-        const deltaDistance = Math.sqrt(deltaX*deltaX + deltaY*deltaY) - multiTouchResizingStartDistance;
-        textLabel1 = "resizing: " + multiTouchResizingStartDistance + "; delta: " + deltaDistance;
+        const newDistance = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+        const deltaDistance = newDistance - multiTouchResizingStartDistance;
+        const change = newDistance / multiTouchResizingStartDistance;
+        editorInfo.zoomScale = multiTouchResizingStartZoomScale * change;
+        textLabel1 = "resizing: " + multiTouchResizingStartDistance + "; delta: " + deltaDistance + "; change: " + change;
         draw();
       }
     }

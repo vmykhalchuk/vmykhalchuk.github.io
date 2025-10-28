@@ -16,15 +16,27 @@ let skin = skins[0];
 let editorInfo = {
   headerRowHeight: 25,
   headerColumnWidth: 25,
-  headerFont: '16px bold sans-serif',
-  headerFontStyle: 'black'//'#636363'
+  headerFont: {
+    name: 'sans-serif',
+    sizePx: 18,
+    bold: true, italic: false,
+    color: 'black'
+  },
+  //headerFont: '16px bold sans-serif',
+  //headerFontStyle: 'black',//'#636363'
+  zoomScale: 1.5,
 }
 
 let metaInfo = {
-  defaultFont: {name: 'sans-serif', size: '16px', color: 'black'},
+  defaultFont: {
+    name: 'sans-serif', 
+    sizePx: 16,
+    bold: false, italic: true,
+    color: 'black'
+  },
   backgroundColor: 'white',
   defaultColumnWidth: 60,
-  defaultRowHeight: 17,
+  defaultRowHeight: 23,
   rowsCount: 30,
   columnsCount: 5, // [A..E]
   
@@ -97,6 +109,18 @@ let dataRowsRenderData = [
 
 
 const rendererUtil = {
+  setCtxFont: function(ctx, fontObj) {
+    const boldStr = fontObj.bold ? 'bold' : '';
+    const italicStr = fontObj.italic ? 'italic' : '';
+    const scaledSizePx = fontObj.sizePx * editorInfo.zoomScale;
+    ctx.font = `${boldStr} ${italicStr} ${scaledSizePx}px ${fontObj.name}`;
+    ctx.fillStyle = fontObj.color;
+  },
+  
+  setCtxFontStyleOnly: function(ctx, fontObj) {
+    ctx.fillStyle = fontObj.color;
+  },
+  
   getColumnName: function(colNo) {
     return String.fromCharCode('A'.charCodeAt(0)+colNo);
   },
@@ -127,7 +151,7 @@ const renderer = {
 
     var x = 0;
     for (var i = 0; i < 5; i++) {
-      const w = this.util.getColumnWidth(i);
+      const w = this.util.getColumnWidth(i)*editorInfo.zoomScale;
       ctx.beginPath();
       ctx.moveTo(x-this.scrollLeft+0.5, 0.5);
       ctx.lineTo(x-this.scrollLeft+0.5,this.height+0.5);
@@ -145,16 +169,14 @@ const renderer = {
   },
 
   renderHeaderWithoutVerticalLines: function() {
-    const { ctx, width, height, scrollLeft, scrollTop } = this; // destructuring
-    const { getColumnName, getColumnWidth } = this.util;
-    const hHeight = editorInfo.headerRowHeight;
+    const { ctx, util, width, height, scrollLeft, scrollTop } = this; // destructuring
+    const { setCtxFont, setCtxFontStyleOnly, getColumnName, getColumnWidth } = util;
+    const hHeight = editorInfo.headerRowHeight * editorInfo.zoomScale;
     ctx.save();
     
+    setCtxFont(ctx, editorInfo.headerFont);
     ctx.fillStyle = skin.headerBgColor;
     ctx.fillRect(0.5, 0.5, width, hHeight);
-    
-    ctx.font = editorInfo.headerFont;
-    ctx.fillStyle = editorInfo.headerFontStyle;
     
     // Note: there is one pixel margin between columns
     var x = 0;
@@ -175,7 +197,7 @@ const renderer = {
       };
       const colSelected = colSelectedF(i);
       const colFullySelected = colFullySelectedF(i);
-      const w = getColumnWidth(i);
+      const w = getColumnWidth(i) * editorInfo.zoomScale;
 
       // draw header bg rectangle (if selected || fullColSelected)
       if (colSelected || colFullySelected) {
@@ -205,7 +227,8 @@ const renderer = {
       } else {
         dy = (hHeight-2-h) / 2;
       }
-      ctx.fillStyle = editorInfo.headerFontStyle;
+      
+      setCtxFontStyleOnly(ctx, editorInfo.headerFont);
       ctx.fillText(colTitle, x+dx-scrollLeft+0.5, hHeight-dy-below-scrollTop+0.5);
       x += w+1;
     }
@@ -219,10 +242,9 @@ const renderer = {
 
   renderRowsWithoutVerticalLines: function() {
     const { ctx, width, height, scrollLeft, scrollTop } = this; // destructuring
-    const { getColumnName, getColumnWidth } = this.util;
+    const { setCtxFont, getColumnName, getColumnWidth } = this.util;
 
-    ctx.font = editorInfo.headerFont;
-    ctx.fillStyle = editorInfo.headerFontStyle;
+    setCtxFont(ctx, metaInfo.defaultFont);
     ctx.strokeStyle = skin.gridLineStyle;
     ctx.lineWidth = skin.gridLineWidth;
 
@@ -231,11 +253,12 @@ const renderer = {
       
     }
     
+    const rh = metaInfo.defaultRowHeight*editorInfo.zoomScale;
     for (var i = 0; i < 100; i++) {
-      let y = 50+i*20-scrollTop;
-      ctx.fillText("Hgadasioumbkmasfgkjhtyuljkahsd    asgkfjhsdgfk j  hasgkfjhsgdjk  asfhgk", 
-            20-scrollLeft+0.5, y+16+0.5);
-      ctx.beginPath(); ctx.moveTo(0.5,y+20+0.5); ctx.lineTo(width+0.5,y+20+0.5); ctx.stroke();
+      let y = (50*editorInfo.zoomScale)+i*rh-scrollTop;
+      ctx.fillText("Hgadasioum  bkmasfgk   jhtyu               ljkahsd    asgkfj          hsdgfk j  hasgkfjhsgdjk  asfhgk", 
+            (20*editorInfo.zoomScale)-scrollLeft+0.5, y+(rh/4*3)+0.5);
+      ctx.beginPath(); ctx.moveTo(0.5,y+rh+0.5); ctx.lineTo(width+0.5,y+rh+0.5); ctx.stroke();
     }
   },
   
