@@ -318,12 +318,11 @@
     }
 
     function onCanvasTouchEnd(e) {
-      alert('touchend');
       if (isScrolling) {
         isScrolling = false;
       } else if (isMultiTouchResizing) {
         isMultiTouchResizing = false;
-        textLabel1 = "";
+        textLabel1 = "touchend";
         draw();
       }
     }
@@ -333,10 +332,9 @@
         isScrolling = false;
       } else if (isMultiTouchResizing) {
         isMultiTouchResizing = false;
-        textLabel1 = "";
+        textLabel1 = "touchcanceled";
         draw();
       }
-      alert('cancelled');
     }
 
     
