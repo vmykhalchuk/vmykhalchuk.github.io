@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta name="treesheet-app-version" content="v0.23-zoom">
+  <meta name="treesheet-app-version" content="v0.24">
   
   <!--meta viewport: https://www.npmjs.com/package/@hint/hint-meta-viewport-->
   <!--meta name="viewport" content="width=device-width, initial-scale=1.0"-->
@@ -76,8 +76,112 @@
 <body>
   <canvas id="fullscreenCanvas"></canvas>
   <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
+  <script src="https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js"></script>
   <script type="text/javascript" src="js/pwa.js"></script>
+  <script type="text/javascript" src="js/util.js"></script>
   <script>
+    if (false) {
+      // Access the functions from the global 'webVitals' object
+      const { onLCP, onFID, onCLS, onINP } = webVitals;
+      // Call the functions to report the metrics
+      onLCP(console.log);
+      onFID(console.log);
+      onCLS(console.log);
+      onINP(console.log);
+    }
+  
+    let averageFPS = 0;
+    if (true) {
+      // track FPS
+      (function() {
+        let frameCount = 0;
+        let lastLogTime = performance.now();
+        let storedAverageFPS = 0;
+        
+        // 1. The render loop: This function runs on every frame
+        function animationLoop() {
+          frameCount++; // Increment the frame counter
+          if (averageFPS !== storedAverageFPS) {
+            storedAverageFPS = averageFPS;
+            fpsLabel = "FPS: " + averageFPS;
+            draw();
+          }
+          requestAnimationFrame(animationLoop); // Request the next frame
+        }
+
+        // 2. The 5-second logger
+        setInterval(() => {
+          const currentTime = performance.now();
+          const timeElapsed = currentTime - lastLogTime; // Time elapsed in ms
+          
+          // Calculate average FPS over the elapsed time
+          averageFPS = ((frameCount * 1000) / timeElapsed).toFixed(1);
+
+          //console.log(`Average FPS (last 5s): ${averageFPS}`);
+
+          // Reset for the next 5-second interval
+          frameCount = 0;
+          lastLogTime = currentTime;
+          
+        }, 1000); // Run every 5000 milliseconds (5 seconds)
+
+        // Start the frame-counting loop
+        requestAnimationFrame(animationLoop);
+      })();
+    }
+    
+    const logHistory = []; const LOG_HISTORY_MAX_SIZE = 20; const LOG_HOSTORY_ENTRY_MAX_LENGTH = 100;
+    if (true) {
+      // capture logs
+      const originalConsoleLog = console.log;
+      const originalConsoleWarn = console.warn;
+      const originalConsoleError = console.error;
+      
+      
+      const pushLogEntryFn = function(...args) {
+        // Convert arguments to a readable string (optional, but helpful)
+        const logMessage = args.map(arg => {
+            if (typeof arg === 'object' && arg !== null) {
+                try {
+                    // Safely convert objects to JSON string
+                    return JSON.stringify(arg);
+                } catch (e) {
+                    // Fallback for circular references
+                    return String(arg); 
+                }
+            }
+            return String(arg);
+        }).join(' ');
+        
+        // Save the message, timestamp, and type to the global history
+        const logMsg = `${new Date().toISOString()} ${logMessage.substring(0,LOG_HOSTORY_ENTRY_MAX_LENGTH)}`;
+        logHistory.push(logMsg);
+        
+        if (logHistory.length > LOG_HISTORY_MAX_SIZE) {
+          logHistory.shift();
+        }
+      };
+      /**
+       * Custom function that overrides console.log
+       * @param {...any} args - The arguments passed to console.log
+       */
+      console.log = function(...args) {
+        pushLogEntryFn(args);
+        // Execute the original console.log function so the message still appears in the DevTools console
+        originalConsoleLog.apply(console, args);
+      };
+      console.warn = function(...args) {
+        pushLogEntryFn(args);
+        // Execute the original console.log function so the message still appears in the DevTools console
+        originalConsoleWarn.apply(console, args);
+      };
+      console.error = function(...args) {
+        pushLogEntryFn(args);
+        // Execute the original console.log function so the message still appears in the DevTools console
+        originalConsoleError.apply(console, args);
+      };
+    }
+  
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('js/service-worker.js');
     }
@@ -107,6 +211,7 @@
     ];
     
     var textLabel1 = "<empty>";
+    var fpsLabel = "";
     
     var isScrolling = false;
     var scrollLeft=0, scrollTop=0;
@@ -165,7 +270,18 @@
       ctx.save();
       ctx.font = '16px sans-serif';
       ctx.fillStyle = '#000';
-      ctx.fillText(textLabel1, 70, canvas.height - 30);
+      ctx.fillText(textLabel1, 70, canvas.height - 50);
+      util.drawTextWithBackground(ctx, fpsLabel, 70, canvas.height - 30, '16px sans-serif');
+      
+      if (true) {
+        // draw logs
+        ctx.font = '16px sans-serif';
+        ctx.fillStyle = '#000';
+        for (let i = 0; i < logHistory.length; i++) {
+          const msg = logHistory[logHistory.length - 1 - i];
+          ctx.fillText(msg, canvas.width - 400, canvas.height - 30 - i*20);
+        }
+      }
       ctx.restore();
     }
 
