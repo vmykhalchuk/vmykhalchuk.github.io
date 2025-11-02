@@ -6,8 +6,6 @@ let model = {
 };
 
 let modelChanges = {
-  snapshots: [
-  ],
   changes: [
     /*
       main concepts:
@@ -30,18 +28,25 @@ let modelChanges = {
   
     /* t(type): 
           0 - noop,
-          101 - add column after {colId}, 102 - add column before {colId}, 103 - add column as a first column
+          111 - add column(s) after {colId}, 112 - add column(s) before {colId}, 113 - add column(s) as a first column
+                  cid:colId
+                  cc:columnsCount
+                  style: {width,bgcolor,leftBorder,rightBorder}
           
+          121 - delete column(s) [{colId}]
+          
+          131 - resize column(s) [{colId}]
+          132 - hide column(s) [{colId}]
+          133 - show column(s) [{colId}]
+          
+          141 - modify cells in column {colId}
           
           2 - update, 3 remove
     */
     {
       tmstmp: 347893798734,
       ops: [
-        {
-          t: 
-          // add column
-        }
+        { t: 113, cc: 2, w: 55, bc:'#1155ff', lb:2,lbc:'red' }
       ]
     },
   ]

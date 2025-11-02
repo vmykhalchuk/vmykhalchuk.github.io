@@ -231,7 +231,11 @@
       ctx.fillStyle = 'white';//'skyblue';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      if (imgPupkinLoaded) ctx.drawImage(imgPumpkin, 100, 300);
+      if (imgPupkinLoaded) {
+        const w = imgPumpkin.width * editorInfo.zoomScale;
+        const h = imgPumpkin.height * editorInfo.zoomScale;
+        ctx.drawImage(imgPumpkin, 100, 300, w, h);
+      }
       
       // line
       /*ctx.strokeStyle = "grey";//"#0077cc";
@@ -486,7 +490,6 @@
         });
         observer.observe(canvas, {box: ['device-pixel-content-box']});
       }
-
 
       
       if ("serviceWorker" in navigator) {
