@@ -1,3 +1,5 @@
+const gd = 0.5; // global delta
+
 const skins = [
   {
     gridLineStyle: 'black',//'#d3d3d3',
@@ -165,16 +167,16 @@ const renderer = {
     for (var i = 0; i < 5; i++) {
       const w = this.util.getColumnWidth(i)*editorInfo.zoomScale;
       ctx.beginPath();
-      ctx.moveTo(x-this.scrollLeft+0.5, 0.5);
-      ctx.lineTo(x-this.scrollLeft+0.5,this.height+0.5);
+      ctx.moveTo(x-this.scrollLeft+gd, gd);
+      ctx.lineTo(x-this.scrollLeft+gd,this.height+gd);
       ctx.stroke();
       
       x+= w+1;
     }
     
     ctx.beginPath();
-    ctx.moveTo(x-this.scrollLeft+0.5, 0.5);
-    ctx.lineTo(x-this.scrollLeft+0.5,this.height+0.5);
+    ctx.moveTo(x-this.scrollLeft+gd, gd);
+    ctx.lineTo(x-this.scrollLeft+gd, this.height+gd);
     ctx.stroke();
     
     ctx.restore();
@@ -188,7 +190,7 @@ const renderer = {
     
     setCtxFont(ctx, editorInfo.headerFont);
     ctx.fillStyle = skin.headerBgColor;
-    ctx.fillRect(0.5, 0.5, width, hHeight);
+    ctx.fillRect(gd, gd, width, hHeight);
     
     // Note: there is one pixel margin between columns
     var x = 0;
@@ -218,7 +220,7 @@ const renderer = {
         } else {
           ctx.fillStyle = skin.headerSelectedBgColor;
         }
-        ctx.fillRect(x+1+0.5, 0.5, w, hHeight);
+        ctx.fillRect(x+skin.gridLineWidth+gd, gd, w, hHeight); // FIXME make skin.gridLineWidth zoomable
       }
 
       // draw text
@@ -241,13 +243,13 @@ const renderer = {
       }
       
       setCtxFontStyleOnly(ctx, editorInfo.headerFont);
-      ctx.fillText(colTitle, x+dx-scrollLeft+0.5, hHeight-dy-below-scrollTop+0.5);
-      x += w+1;
+      ctx.fillText(colTitle, x+dx-scrollLeft+gd, hHeight-dy-below-scrollTop+gd);
+      x += w+skin.gridLineWidth; // FIXME make skin.gridLineWidth zoomable
     }
     
     ctx.strokeStyle = skin.gridLineStyle;
     ctx.lineWidth = skin.gridLineWidth;
-    ctx.strokeRect(0.5, 0.5, width, hHeight);
+    ctx.strokeRect(gd, gd, width, hHeight);
 
     ctx.restore();
   },
@@ -269,8 +271,8 @@ const renderer = {
     for (var i = 0; i < 100; i++) {
       let y = (50*editorInfo.zoomScale)+i*rh-scrollTop;
       ctx.fillText("Hgadasioum  bkmasfgk   jhtyu               ljkahsd    asgkfj          hsdgfk j  hasgkfjhsgdjk  asfhgk", 
-            (20*editorInfo.zoomScale)-scrollLeft+0.5, y+(rh/4*3)+0.5);
-      ctx.beginPath(); ctx.moveTo(0.5,y+rh+0.5); ctx.lineTo(width+0.5,y+rh+0.5); ctx.stroke();
+            (20*editorInfo.zoomScale)-scrollLeft+gd, y+(rh/4*3)+gd);
+      ctx.beginPath(); ctx.moveTo(gd,y+rh+gd); ctx.lineTo(width+gd,y+rh+gd); ctx.stroke();
     }
   },
   

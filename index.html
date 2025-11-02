@@ -130,7 +130,7 @@
       })();
     }
     
-    const logHistory = []; const LOG_HISTORY_MAX_SIZE = 20; const LOG_HOSTORY_ENTRY_MAX_LENGTH = 100;
+    const logHistory = []; const LOG_HISTORY_MAX_SIZE = 23; const LOG_HOSTORY_ENTRY_MAX_LENGTH = 200;
     if (true) {
       // capture logs
       const originalConsoleLog = console.log;
@@ -154,7 +154,7 @@
         }).join(' ');
         
         // Save the message, timestamp, and type to the global history
-        const logMsg = `${new Date().toISOString()} ${logMessage.substring(0,LOG_HOSTORY_ENTRY_MAX_LENGTH)}`;
+        const logMsg = `${new Date().toTimeString().substring(0,8)} ${logMessage.substring(0,LOG_HOSTORY_ENTRY_MAX_LENGTH)}`;
         logHistory.push(logMsg);
         
         if (logHistory.length > LOG_HISTORY_MAX_SIZE) {
@@ -210,24 +210,28 @@
       {x:140,y:180,r:30,c:'blue'}
     ];
     
-    var textLabel1 = "<empty>";
-    var fpsLabel = "";
+    let textLabel1 = "<empty>";
+    let fpsLabel = "";
     
-    var isScrolling = false;
-    var scrollLeft=0, scrollTop=0;
-    var touchStartX=0, touchStartY=0;
-    var scrollLeftStart=0, scrollTopStart=0;
+    let isScrolling = false;
+    let scrollLeft=0, scrollTop=0;
+    let touchStartX=0, touchStartY=0;
+    let scrollLeftStart=0, scrollTopStart=0;
     
-    var isMultiTouchResizing = false;
-    var multiTouchResizingStartDistance = 0;
-    var multiTouchResizingStartZoomScale = 1;
+    let isMultiTouchResizing = false;
+    let multiTouchResizingStartDistance = 0;
+    let multiTouchResizingStartZoomScale = 1;
     
+    const imgPumpkin = new Image(); imgPumpkin.src = 'images/pumpkin.png';
+    let imgPupkinLoaded = false; imgPumpkin.onload = () => { imgPupkinLoaded=true; };
     // Example drawing
     function draw() {
 
       ctx.save();
       ctx.fillStyle = 'white';//'skyblue';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      if (imgPupkinLoaded) ctx.drawImage(imgPumpkin, 100, 300);
       
       // line
       /*ctx.strokeStyle = "grey";//"#0077cc";
@@ -279,7 +283,7 @@
         ctx.fillStyle = '#000';
         for (let i = 0; i < logHistory.length; i++) {
           const msg = logHistory[logHistory.length - 1 - i];
-          ctx.fillText(msg, canvas.width - 400, canvas.height - 30 - i*20);
+          ctx.fillText(msg, canvas.width - 600, canvas.height - 30 - i*20);
         }
       }
       ctx.restore();
