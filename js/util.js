@@ -1,4 +1,4 @@
-const util = {
+const ctxUtil = {
   drawTextWithBackground: function(ctx, text, x, y, font, padding) {
     
     // 1. Save the current canvas state (colors, fonts, etc.)
@@ -41,5 +41,31 @@ const util = {
     
     // 6. Restore the canvas state (reverts colors/fonts to what they were before)
     ctx.restore();
+  }
+};
+
+const renderUtil = {
+  // render specific utils
+  
+  setCtxFont: function(ctx, fontObj) {
+    const boldStr = fontObj.bold ? 'bold' : '';
+    const italicStr = fontObj.italic ? 'italic' : '';
+    const scaledSizePx = fontObj.sizePx * editorInfo.zoomScale;
+    ctx.font = `${boldStr} ${italicStr} ${scaledSizePx}px ${fontObj.name}`;
+    ctx.fillStyle = fontObj.color;
+  },
+  
+  setCtxFontStyleOnly: function(ctx, fontObj) {
+    ctx.fillStyle = fontObj.color;
+  },
+  
+  getColumnName: function(colNo) {
+    return String.fromCharCode('A'.charCodeAt(0)+colNo);
+  },
+
+  getColumnWidth: function(colNo) {
+    const colMeta = colNo < columnsMetaInfo.length ? columnsMetaInfo[colNo] : null;
+    const colWidth = colMeta ? colMeta.width : null;
+    return colWidth ? colWidth : metaInfo.defaultColumnWidth;
   }
 };

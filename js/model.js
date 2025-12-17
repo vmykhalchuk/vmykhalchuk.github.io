@@ -31,7 +31,8 @@ let modelChanges = {
           111 - add column(s) after {colId}, 112 - add column(s) before {colId}, 113 - add column(s) as a first column
                   cid:colId
                   cc:columnsCount
-                  style: {width,bgcolor,leftBorder,rightBorder}
+                  styling: {w:width,bc:bgcolor,lbw:leftBorderWidth,;lbc:leftBorderColor,lbt:leftBorderType,rbw:rightBorderWidth,rbc,rbt}
+                  cellsData: data with cells
           
           121 - delete column(s) [{colId}]
           
@@ -41,12 +42,16 @@ let modelChanges = {
           
           141 - modify cells in column {colId}
           
-          2 - update, 3 remove
+          211 - add row(s) after {rowId}, 212 - add row(s) before {rowId}, 213 - add row(s) as a first row(s)
+              // this is only for rows on same level
+              
+          221 - add row as first child of {parentRowId}
     */
     {
       tmstmp: 347893798734,
       ops: [
-        { t: 113, cc: 2, w: 55, bc:'#1155ff', lb:2,lbc:'red' }
+        { t: 113, cc: 2, w: 55, bc:'#1155ff', lb:2,lbc:'red', cellsData: [""]},
+        { }
       ]
     },
   ]

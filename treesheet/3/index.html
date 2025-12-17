@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#182034">
   <link rel="icon" type="image/png" sizes="48x48" href="./images/favicon-48x48.ico">
   
-  <title>Test Note App</title>
+  <title>TreeSheets Note App POC</title>
   <!--link rel="stylesheet" href="css/styles.css"-->
   
   <!-- This lets it make as Android app (In Chrome browser menut, Add to Homepage, search on main screen new icon with this app) -->
@@ -77,10 +77,12 @@
   <canvas id="fullscreenCanvas"></canvas>
   <textarea id="editableBox" class="editable-box" style="display:none;"></textarea>
   <script src="https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js"></script>
-  <script type="text/javascript" src="js/pwa.js"></script>
   <script type="text/javascript" src="js/util.js"></script>
+  <script type="text/javascript" src="js/pwa.js"></script>
+  <script type="text/javascript" src="js/render.js"></script>
   <script>
     if (false) {
+      // imported via https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js
       // Access the functions from the global 'webVitals' object
       const { onLCP, onFID, onCLS, onINP } = webVitals;
       // Call the functions to report the metrics
@@ -134,9 +136,11 @@
     if (true) {
       // capture logs
       const originalConsoleLog = console.log;
+      const originalConsoleTrace = console.trace;
+      const originalConsoleDebug = console.debug;
+      const originalConsoleInfo = console.info;
       const originalConsoleWarn = console.warn;
       const originalConsoleError = console.error;
-      
       
       const pushLogEntryFn = function(...args) {
         // Convert arguments to a readable string (optional, but helpful)
@@ -170,14 +174,24 @@
         // Execute the original console.log function so the message still appears in the DevTools console
         originalConsoleLog.apply(console, args);
       };
+      console.trace = function(...args) {
+        pushLogEntryFn(args);
+        originalConsoleTrace.apply(console, args);
+      };
+      console.debug = function(...args) {
+        pushLogEntryFn(args);
+        originalConsoleDebug.apply(console, args);
+      };
+      console.info = function(...args) {
+        pushLogEntryFn(args);
+        originalConsoleInfo.apply(console, args);
+      };
       console.warn = function(...args) {
         pushLogEntryFn(args);
-        // Execute the original console.log function so the message still appears in the DevTools console
         originalConsoleWarn.apply(console, args);
       };
       console.error = function(...args) {
         pushLogEntryFn(args);
-        // Execute the original console.log function so the message still appears in the DevTools console
         originalConsoleError.apply(console, args);
       };
     }
@@ -279,7 +293,7 @@
       ctx.font = '16px sans-serif';
       ctx.fillStyle = '#000';
       ctx.fillText(textLabel1, 70, canvas.height - 50);
-      util.drawTextWithBackground(ctx, fpsLabel, 70, canvas.height - 30, '16px sans-serif');
+      ctxUtil.drawTextWithBackground(ctx, fpsLabel, 70, canvas.height - 30, '16px sans-serif');
       
       if (true) {
         // draw logs
@@ -503,6 +517,5 @@
     
   </script>
   <!--script type="text/javascript" src="js/main.js"></script-->
-  <script type="text/javascript" src="js/render.js"></script>
 </body>
 </html>
