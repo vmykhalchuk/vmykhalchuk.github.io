@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Formula Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800" id="form-title"></h1>
+        
+        <div id="form-container" class="space-y-4">
+            <!-- Dynamic inputs will appear here -->
+        </div>
+
+        <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Result</span>
+            <div id="result-display" class="text-xl font-mono mt-1 text-gray-800">--</div>
+        </div>
+    </div>
+
+    <script>
+        const formTitle = document.getElementById('form-title');
+        const container = document.getElementById('form-container');
+        const resultDisplay = document.getElementById('result-display');
+
+        // 1. Get and Decode URL Parameter
+        const params = new URLSearchParams(window.location.search);
+        const encodedData = params.get('config');
+
+        if (!encodedData) {
+            container.innerHTML = "<p class='text-red-500'>No configuration found. Please provide a 'config' Base64 parameter.</p>";
+        } else {
+            try {
+                const data = JSON.parse(atob(encodedData));
+                formTitle.innerText = data.title;
+                renderForm(data);
+            } catch (e) {
+                container.innerHTML = "<p class='text-red-500'>Error decoding JSON. Check your Base64 string.</p>";
+            }
+        }
+
+        function renderForm(config) {
+            config.items.forEach((item, index) => {
+                const [typeInfo, ...options] = item;
+                const [type, label] = typeInfo.split('=');
+                
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `<label class="block text-sm font-medium text-gray-700 mb-1">${label}</label>`;
+
+                let input;
+                if (type === 'select') {
+                    input = document.createElement('select');
+                    options.forEach(opt => {
+                        const [name, val] = opt.split('=');
+                        const el = document.createElement('option');
+                        el.value = val;
+                        el.textContent = name;
+                        input.appendChild(el);
+                    });
+                } else if (type === 'number') {
+                    input = document.createElement('input');
+                    input.type = 'number';
+                    options.forEach(opt => {
+                        const [key, val] = opt.split('=');
+                        input.setAttribute(key, val);
+                    });
+                }
+
+                input.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition-all input-field";
+                input.dataset.index = index + 1; // For $1, $2 mapping
+                input.addEventListener('input', () => calculate(config.result));
+                
+                wrapper.appendChild(input);
+                container.appendChild(wrapper);
+            });
+
+            // Initial calculation
+            calculate(config.result);
+        }
+
+        function calculate(formula) {
+            const inputs = document.querySelectorAll('.input-field');
+            let processedFormula = formula;
+
+            inputs.forEach(input => {
+                const val = input.value || 0;
+                // Replace $1, $2 etc with actual values
+                const regex = new RegExp(`\\$${input.dataset.index}`, 'g');
+                processedFormula = processedFormula.replace(regex, val);
+            });
+
+            try {
+                // Using Function constructor as a safer alternative to eval() for simple math
+                const evalResult = new Function(`return ${processedFormula}`)();
+                resultDisplay.textContent = evalResult;
+            } catch (err) {
+                resultDisplay.textContent = "Error in formula";
+            }
+        }
+    </script>
+</body>
+</html>
