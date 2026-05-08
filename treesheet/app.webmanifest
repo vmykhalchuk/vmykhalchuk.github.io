@@ -2,9 +2,9 @@
   "name": "Tree Calculation Spreadsheets",
   "short_name": "TreeSheets",
   "description": "A primitive tree spreadsheet to act as notes app for now",
-  "start_url": "/",
+  "start_url": "/treesheet/",
   "display": "standalone",
-  "scope": "/",
+  "scope": "/treesheet/",
   "background_color": "#F47216",
   "theme_color": "#F47216",
 
@@ -26,17 +26,23 @@
     {
       "src": "screenshot/phone-ss-1.png",
       "sizes": "336x729",
-      "type": "image/png"
+      "type": "image/png",
+      "form-factor": "narow",
+      "label": "Homescreen of TreeSheets"
     },
     {
       "src": "screenshot/phone-ss-2.png",
       "sizes": "336x729",
-      "type": "image/png"
+      "type": "image/png",
+      "form-factor": "narow",
+      "label": "Editing a tree node"
     },
     {
       "src": "screenshot/phone-ss-3.png",
       "sizes": "336x729",
-      "type": "image/png"
+      "type": "image/png",
+      "form-factor": "narow",
+      "label": "Tree view overview"
     }
   ]
 }
