@@ -15,6 +15,10 @@
             --glass: rgba(255, 255, 255, 0.03);
         }
 
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             margin: 0;
             padding: 0;
@@ -25,7 +29,18 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100vw;
             overflow: hidden;
+        }
+        
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* This traps the 200% grid inside */
+            z-index: -1;
         }
 
         /* Subtle animated background */
@@ -55,6 +70,8 @@
             border-radius: 20px;
             text-align: center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            z-index: 1;
         }
 
         h1 {
@@ -161,7 +178,9 @@
 </head>
 <body>
 
-    <div class="grid"></div>
+    <div class="bg-container">
+      <div class="grid"></div>
+    </div>
 
     <main class="card">
         <div class="icon-box"></div>
@@ -173,7 +192,7 @@
             </svg>
         </div>
         <h1>Hello.</h1>
-        <p>I am a nerd believing in automation<span class="cursor"></span></p>
+        <p>I am a nerd believing in power of automation 🤖<span class="cursor"></span></p>
     </main>
 
 </body>
