@@ -1,0 +1,14 @@
+Ideas
+
+  - Extend item types
+    - slider
+  
+  - Add functions support
+    - functions array to list functions that can be called from formula or other functions
+    - only functions required are added
+
+  - Add tool to minimize JSon object and encode
+    - extend picoform.html to accept short names versus long ones
+  
+  - Add Form generator to create/edit JSon object
+  
