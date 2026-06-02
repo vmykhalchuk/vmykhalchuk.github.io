@@ -5,29 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Formula Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use either tailwind JS or Styles below -->
-    <!--
-        Convert JS=>CSS:
-          0) Remove Styles below
-          1) Open https://play.tailwindcss.com/
-          2) Paste this HTML into
-          3) Copy Generated CSS into styles below
-    -->
+    <script>
+        // Configure Tailwind to look for a 'dark' class on the HTML tag
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     <style> /*! Tailwind styles */
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4 transition-colors duration-200">
 
-    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800" id="form-title"></h1>
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg max-w-md w-full relative transition-colors duration-200">
+        
+        <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+            <svg id="theme-toggle-sun" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM6.464 14.95l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4.343 4.343a1 1 0 011.414 0L6.464 5.05a1 1 0 01-1.414 1.414L4.343 5.757a1 1 0 010-1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z"></path></svg>
+            <svg id="theme-toggle-moon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        </button>
+
+        <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100" id="form-title"></h1>
         
         <div id="form-container" class="space-y-4">
-            <!-- Dynamic inputs will appear here -->
-        </div>
+            </div>
 
-        <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
-            <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Result</span>
-            <div id="result-display" class="text-xl font-mono mt-1 text-gray-800">--</div>
+        <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-950/40 rounded-lg border border-blue-100 dark:border-blue-900/50">
+            <span class="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Result</span>
+            <div id="result-display" class="text-xl font-mono mt-1 text-gray-800 dark:text-gray-100">--</div>
         </div>
     </div>
 
@@ -36,19 +39,62 @@
         const container = document.getElementById('form-container');
         const resultDisplay = document.getElementById('result-display');
 
+        // --- Theme Logic ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun');
+        const moonIcon = document.getElementById('theme-toggle-moon');
+
+        function applyTheme() {
+            // Priority: LocalStorage override -> Browser preference
+            const isDark = 'theme' in localStorage 
+                ? localStorage.theme === 'dark' 
+                : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                moonIcon.classList.remove('hidden');
+                sunIcon.classList.add('hidden');
+            }
+        }
+
+        // Toggle theme manually
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'light';
+            } else {
+                localStorage.theme = 'dark';
+            }
+            applyTheme();
+        });
+
+        // Sync if user changes their OS theme settings live
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (!('theme' in localStorage)) {
+                applyTheme();
+            }
+        });
+
+        // Initialize theme
+        applyTheme();
+        // --------------------
+
         // 1. Get and Decode URL Parameter
         const params = new URLSearchParams(window.location.search);
         const encodedData = params.get('config');
 
         if (!encodedData) {
-            container.innerHTML = "<p class='text-red-500'>No configuration found. Please provide a 'config' Base64 parameter.</p>";
+            container.innerHTML = "<p class='text-red-500 dark:text-red-400'>No configuration found. Please provide a 'config' Base64 parameter.</p>";
         } else {
             try {
                 const data = JSON.parse(atob(encodedData));
                 formTitle.innerText = data.title;
                 renderForm(data);
             } catch (e) {
-                container.innerHTML = "<p class='text-red-500'>Error decoding JSON. Check your Base64 string.</p>";
+                container.innerHTML = "<p class='text-red-500 dark:text-red-400'>Error decoding JSON. Check your Base64 string.</p>";
             }
         }
 
@@ -58,7 +104,7 @@
                 const [type, label] = typeInfo.split('=');
                 
                 const wrapper = document.createElement('div');
-                wrapper.innerHTML = `<label class="block text-sm font-medium text-gray-700 mb-1">${label}</label>`;
+                wrapper.innerHTML = `<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">${label}</label>`;
 
                 let input;
                 if (type === 'select') {
@@ -79,7 +125,7 @@
                     });
                 }
 
-                input.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition-all input-field";
+                input.className = "w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition-all input-field";
                 input.dataset.index = index + 1; // For $1, $2 mapping
                 input.addEventListener('input', () => calculate(config.result));
                 
@@ -105,7 +151,7 @@
             try {
                 // Using Function constructor as a safer alternative to eval() for simple math
                 const evalResult = new Function(`return ${processedFormula}`)();
-                resultDisplay.textContent = evalResult;
+                resultDisplay.textContent = evalResult ?? "--";
             } catch (err) {
                 resultDisplay.textContent = "Error in formula";
             }
