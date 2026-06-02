@@ -1,4 +1,5 @@
-Simple static tool that will be hosted on github.io.
+Simple static tool that can be hosted anywhere, all it needs is picoform.html file.
+
 It reads URL parameter which is Base64 encoded json object.
 Json object example:
 
@@ -9,13 +10,13 @@ Json object example:
 }
 
 Based on this parameter it creates interactive form with items listed in items array.
-Each array contains subarray.
- - That subarray has first element dedicated for type and name of item.
+Items array contains lits of subarrays.
+ - Each subarray has first element dedicated for type and name of item.
  - Subsequent elements are configuration values for that element.
- - For select these are possible options with Name=Value.
+ - For Select type these are possible options with Name=Value.
  - For Number input it should be Max/Min etc.
 
-Then we have result - it is a formula where $1, $2, ... etc are item values in order they appear in  items array.
+Last value is result - it is a formula where $1, $2, ... etc are item values in order they appear in  items array.
 
 Examples:
   {"items":[["select=Board","Uno=1024","Mega=4096"],["number=Areas","min=1","max=10","value=1"]],"result":"\'x\'+($1/$2/2)+\' times\'"}
@@ -27,7 +28,7 @@ Examples:
   {"title": "Life Expectancy Increase","items": [["select=Board","Uno=1024","Mega=4096"],["number=Areas","min=1","max=10","value=1"]],"result": "\'x\'+Math.round($1/$2/2*10)/10+\' times\'"}
   ?config=eyJ0aXRsZSI6ICJMaWZlIEV4cGVjdGFuY3kgSW5jcmVhc2UiLCJpdGVtcyI6IFtbInNlbGVjdD1Cb2FyZCIsIlVubz0xMDI0IiwiTWVnYT00MDk2Il0sWyJudW1iZXI9QXJlYXMiLCJtaW49MSIsIm1heD0xMCIsInZhbHVlPTEiXV0sInJlc3VsdCI6ICIneCcrTWF0aC5yb3VuZCgkMS8kMi8yKjEwKS8xMCsnIHRpbWVzJyJ9
 
-Encode to BASE64:
+tO Encode JSON to BASE64:
   let _s = JSON.stringify(yourJSObject);
   let _b64 = btoa(_s);
 URL Encode (Standard):
@@ -40,7 +41,6 @@ URL Encode (RFC 4648):
           .replace(/=+$/, ''); // Remove padding
   }
 
-
 Embedding into MarkDown:
   - create badge here: https://shields.io/badges
      - e.g.:  [![Open Calculator](https://img.shields.io/badge/Life%20Expectancy%20Calculator-blue?style=plastic&logo=opensourcehardware&logoColor=%23FFC0CB)](https://vmykhalchuk.github.io/pinkyvolt/toolkit/picoform.html)
@@ -49,3 +49,19 @@ Embedding into MarkDown:
 Logo icons (free):
   - https://feathericons.dev/
   - https://tabler.io/icons
+  
+  
+### Better encoding
+```
+    // Using lz-string library
+    import LZString from 'lz-string';
+
+    const largeJson = JSON.stringify({ users: [{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }] });
+
+    // Encode & Compress
+    const compressedUrlParam = LZString.compressToEncodedURIComponent(largeJson);
+    // Yields a highly compressed, completely URL-safe string
+
+    // Decode & Decompress
+    const originalJson = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedUrlParam));
+```

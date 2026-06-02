@@ -2,13 +2,18 @@ Ideas
 
   - Extend item types
     - slider
+    
+  - Extend with Table support with tiny spreadsheet logic
+    - example definition
+    
   
   - Add functions support
     - functions array to list functions that can be called from formula or other functions
     - only functions required are added
 
   - Add tool to minimize JSon object and encode
-    - extend picoform.html to accept short names versus long ones
+    - extend picoform.html to accept short names
   
   - Add Form generator to create/edit JSon object
   
+  - Switch from JSon to yaml or something more compact (better support of both or more config types, maybe binary json / binary xml)
