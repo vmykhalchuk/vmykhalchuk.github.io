@@ -17,3 +17,8 @@ Ideas
   - Add Form generator to create/edit JSon object
   
   - Switch from JSon to yaml or something more compact (better support of both or more config types, maybe binary json / binary xml)
+
+
+  - Fully embeded example:
+     data:text/html,<html><body onload="for(i=0;i<6;i++)with(document.body.appendChild(document.createElement('table')).appendChild(document.createElement('tr'))){for(j=0;j<6;j++)appendChild(document.createElement('td')).innerHTML='<input id='+String.fromCharCode(65+j)+(i+1)+' onchange=calc()>'};A1.value=10;B1.value=20;C1.value='=A1+B1';window.calc=function(){try{C1.value='eval(C1.value.substring(1))'}catch(e){}}"></body></html>
+     data:text/html,<html><body onload="formulas={};for(i=0;i<6;i++)with(document.body.appendChild(document.createElement('table')).appendChild(document.createElement('tr'))){for(j=0;j<6;j++)with(appendChild(document.createElement('td')).appendChild(document.createElement('input'))){id=String.fromCharCode(65+j)+(i+1);onfocus=function(){this.value=formulas[this.id]||this.value};onblur=function(){if(this.value.startsWith('='))formulas[this.id]=this.value;calc()}}};A1.value=10;B1.value=20;C1.value='=+A1.value + +B1.value';formulas.C1='=+A1.value + +B1.value';window.calc=function(){for(let k in formulas){try{document.getElementById(k).value=eval(formulas[k].substring(1))}catch(e){}}}"></body></html>
